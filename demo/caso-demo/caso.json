@@ -1,0 +1,77 @@
+{
+  "ferramenta": "GARIMPO 1.0.0 (DEMO offline)",
+  "seed": "exemplo.com.br",
+  "tipo_seed": "dominio",
+  "iniciado_utc": "2026-10-15T05:20:17.557463+00:00",
+  "duracao_s": 0.0,
+  "orcamento": {
+    "profundidade": 1,
+    "max_entidades": 10,
+    "max_requisicoes": 0,
+    "requisicoes_feitas": 0
+  },
+  "grafo": {
+    "no_seed": "exemplo.com.br",
+    "nos": {
+      "dominio:exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "exemplo.com.br",
+        "profundidade": 0,
+        "fatos": [
+          {
+            "fonte": "rdap_registro_br",
+            "fato": "evento registration: 2019-03-04"
+          },
+          {
+            "fonte": "dns",
+            "fato": "A: 203.0.113.10"
+          },
+          {
+            "fonte": "crtsh",
+            "fato": "subdomínio (CT): app.exemplo.com.br"
+          }
+        ]
+      },
+      "ip:203.0.113.10": {
+        "tipo": "ip",
+        "valor": "203.0.113.10",
+        "profundidade": 1,
+        "fatos": [
+          {
+            "fonte": "internetdb",
+            "fato": "portas vistas pela Shodan: [443]"
+          },
+          {
+            "fonte": "rdap",
+            "fato": "país do registro: BR"
+          }
+        ]
+      },
+      "dominio:app.exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "app.exemplo.com.br",
+        "profundidade": 1,
+        "fatos": [
+          {
+            "fonte": "dns",
+            "fato": "A: 203.0.113.10"
+          }
+        ]
+      }
+    },
+    "arestas": [
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "ip:203.0.113.10",
+        "relacao": "resolve_para",
+        "confianca": 0.9
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:app.exemplo.com.br",
+        "relacao": "subdominio_de",
+        "confianca": 0.8
+      }
+    ]
+  }
+}

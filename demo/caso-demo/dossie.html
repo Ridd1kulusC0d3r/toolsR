@@ -1,0 +1,57 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dossiê GARIMPO — exemplo.com.br</title>
+<style>
+:root{color-scheme:dark}
+body{font-family:system-ui,Segoe UI,Roboto,sans-serif;background:#0b1220;color:#e2e8f0;
+max-width:980px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.5rem}h1 small{color:#60a5fa;font-weight:400}
+.meta{display:flex;gap:16px;flex-wrap:wrap;font-size:.85rem;color:#94a3b8;
+background:#111a2e;border:1px solid #1e293b;border-radius:12px;padding:12px 16px}
+.pill{color:#fff;border-radius:999px;padding:2px 10px;font-size:.72rem;
+text-transform:uppercase;margin-right:8px}
+.prof{color:#64748b;font-size:.78rem;margin-left:8px}
+details{background:#111a2e;border:1px solid #1e293b;border-radius:12px;
+margin:10px 0;padding:4px 14px}
+summary{cursor:pointer;padding:10px 0;font-size:.95rem}
+table{width:100%;border-collapse:collapse;margin:6px 0 14px;font-size:.86rem}
+td{padding:6px 8px;border-top:1px solid #1e293b;vertical-align:top}
+td.fonte{color:#60a5fa;white-space:nowrap;width:140px;font-family:ui-monospace,monospace}
+.aviso{border-left:3px solid #f59e0b;background:#1c1917;padding:10px 14px;
+border-radius:8px;font-size:.84rem;color:#fbbf24;margin:16px 0}
+footer{color:#475569;font-size:.78rem;margin-top:28px;border-top:1px solid #1e293b;
+padding-top:12px}
+</style></head><body>
+<h1>⛏️ GARIMPO <small>· dossiê de investigação passiva · DEIVOSINT</small></h1>
+<div class="meta">
+<span><b>Seed:</b> exemplo.com.br (dominio)</span>
+<span><b>Início (UTC):</b> 2026-10-15T05:20:17</span>
+<span><b>Duração:</b> 0.0s</span>
+<span><b>Entidades:</b> 3</span>
+<span><b>Vínculos:</b> 2</span>
+<span><b>Requisições:</b> 0/0</span>
+</div>
+<h2>Grafo de vínculos</h2>
+<svg viewBox="0 0 900 520" style="width:100%;background:#0f172a;border-radius:12px"><line x1="450" y1="260" x2="450" y2="130" stroke="#94a3b8" stroke-width="1.4" opacity="0.89"/><text x="450" y="191" font-size="9" fill="#64748b" text-anchor="middle">resolve_para</text><line x1="450" y1="260" x2="450" y2="390" stroke="#94a3b8" stroke-width="1.4" opacity="0.83"/><text x="450" y="321" font-size="9" fill="#64748b" text-anchor="middle">subdominio_de</text><circle cx="450" cy="260" r="26" fill="#3b82f6" opacity="0.92" stroke="#0f172a" stroke-width="2"/><text x="450" y="299" font-size="11" font-weight="600" fill="#e2e8f0" text-anchor="middle">exemplo.com.br</text><text x="450" y="264" font-size="9" fill="#fff" text-anchor="middle">DOM</text><circle cx="450" cy="130" r="16" fill="#f59e0b" opacity="0.92" stroke="#0f172a" stroke-width="2"/><text x="450" y="159" font-size="11" font-weight="600" fill="#e2e8f0" text-anchor="middle">203.0.113.10</text><text x="450" y="134" font-size="9" fill="#fff" text-anchor="middle">IP</text><circle cx="450" cy="390" r="16" fill="#3b82f6" opacity="0.92" stroke="#0f172a" stroke-width="2"/><text x="450" y="419" font-size="11" font-weight="600" fill="#e2e8f0" text-anchor="middle">app.exemplo.com.br</text><text x="450" y="394" font-size="9" fill="#fff" text-anchor="middle">DOM</text></svg>
+<h2>Entidades e fatos (com fonte por linha)</h2>
+
+<details open>
+<summary><span class="pill" style="background:#3b82f6">dominio</span>
+<b>exemplo.com.br</b> <span class="prof">profundidade 0</span></summary>
+<table><tr><td class="fonte">rdap_registro_br</td><td>evento registration: 2019-03-04</td></tr><tr><td class="fonte">dns</td><td>A: 203.0.113.10</td></tr><tr><td class="fonte">crtsh</td><td>subdomínio (CT): app.exemplo.com.br</td></tr></table></details>
+<details >
+<summary><span class="pill" style="background:#f59e0b">ip</span>
+<b>203.0.113.10</b> <span class="prof">profundidade 1</span></summary>
+<table><tr><td class="fonte">internetdb</td><td>portas vistas pela Shodan: [443]</td></tr><tr><td class="fonte">rdap</td><td>país do registro: BR</td></tr></table></details>
+<details >
+<summary><span class="pill" style="background:#3b82f6">dominio</span>
+<b>app.exemplo.com.br</b> <span class="prof">profundidade 1</span></summary>
+<table><tr><td class="fonte">dns</td><td>A: 203.0.113.10</td></tr></table></details>
+<div class="aviso"><b>Cadeia de custódia:</b> cada resposta bruta está salva em
+<code>evidencias/</code> e registrada em <code>ledger.jsonl</code> com SHA-256
+encadeado. Verifique com <code>python3 garimpo.py verificar caso-demo</code>.
+Fatos vêm de execuções reais das fontes listadas; são pistas a confirmar, não prova.
+Uso legal e autorizado apenas.</div>
+<footer>GARIMPO 1.0.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r)
+· 100% Python stdlib · passivo por padrão</footer>
+</body></html>

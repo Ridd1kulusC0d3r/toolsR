@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manual do GARIMPO — DEIVOSINT</title>
+<style>
+:root{
+  --bg:#0b1220; --card:#111a2e; --borda:#1e293b; --texto:#e2e8f0; --mudo:#94a3b8;
+  --azul:#3b82f6; --verde:#10b981; --ambar:#f59e0b; --roxo:#8b5cf6; --verm:#ef4444;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{font-family:system-ui,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--texto);
+  margin:0;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 60px}
+header{border-bottom:1px solid var(--borda);padding-bottom:18px;margin-bottom:24px}
+h1{font-size:1.8rem;margin:0}
+h1 small{color:var(--azul);font-weight:400;font-size:1rem}
+.sub{color:var(--mudo);margin-top:6px}
+nav{position:sticky;top:0;background:rgba(11,18,32,.95);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--borda);padding:10px 0;margin:0 -16px 24px;z-index:5}
+nav .wrap2{max-width:980px;margin:0 auto;padding:0 16px;display:flex;gap:8px;flex-wrap:wrap}
+nav a{color:var(--mudo);text-decoration:none;font-size:.82rem;background:var(--card);
+  border:1px solid var(--borda);border-radius:999px;padding:5px 12px}
+nav a:hover{color:#fff;border-color:var(--azul)}
+h2{font-size:1.3rem;margin:40px 0 10px;color:#fff;border-left:4px solid var(--azul);padding-left:12px}
+h3{font-size:1.05rem;margin:22px 0 8px}
+.card{background:var(--card);border:1px solid var(--borda);border-radius:14px;padding:18px 20px;margin:14px 0}
+code,pre{font-family:ui-monospace,Consolas,monospace;font-size:.88rem}
+code{background:#0f172a;border:1px solid var(--borda);border-radius:6px;padding:2px 7px}
+pre{background:#0f172a;border:1px solid var(--borda);border-radius:10px;padding:14px 16px;
+  overflow-x:auto;margin:10px 0}
+pre code{background:none;border:none;padding:0}
+.passo{display:flex;gap:14px;margin:14px 0;align-items:flex-start}
+.num{flex:none;width:34px;height:34px;border-radius:50%;background:var(--azul);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700}
+.aviso{border-left:3px solid var(--ambar);background:#1c1917;padding:10px 14px;
+  border-radius:8px;font-size:.88rem;color:#fbbf24;margin:14px 0}
+.ok{border-left:3px solid var(--verde);background:#071f17;padding:10px 14px;
+  border-radius:8px;font-size:.88rem;color:#6ee7b7;margin:14px 0}
+/* abas */
+.abas{display:flex;gap:6px;margin:14px 0 0;flex-wrap:wrap}
+.abas label{background:var(--card);border:1px solid var(--borda);border-bottom:none;
+  border-radius:10px 10px 0 0;padding:8px 18px;cursor:pointer;color:var(--mudo);font-size:.9rem}
+.painel{display:none;border:1px solid var(--borda);border-radius:0 12px 12px 12px;
+  padding:16px 18px;background:var(--card)}
+#so-win:checked ~ .abas label[for=so-win],
+#so-lin:checked ~ .abas label[for=so-lin],
+#so-mac:checked ~ .abas label[for=so-mac]{color:#fff;border-color:var(--azul);background:#16233f}
+#so-win:checked ~ .painel.win, #so-lin:checked ~ .painel.lin, #so-mac:checked ~ .painel.mac{display:block}
+input[type=radio]{display:none}
+/* captura simulada de terminal com marcadores */
+.term{background:#0a0f1c;border:1px solid var(--borda);border-radius:12px;overflow:hidden;margin:14px 0}
+.term .barra{background:#16233f;padding:8px 14px;font-size:.78rem;color:var(--mudo);
+  display:flex;gap:6px;align-items:center}
+.term .barra i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.term pre{border:none;border-radius:0;margin:0;position:relative}
+.mark{display:inline-flex;width:20px;height:20px;border-radius:50%;background:var(--ambar);
+  color:#000;font-weight:700;font-size:.72rem;align-items:center;justify-content:center;
+  font-family:system-ui;vertical-align:middle;margin-right:6px}
+.legmark{display:flex;gap:10px;margin:8px 0;font-size:.86rem;align-items:flex-start}
+table{width:100%;border-collapse:collapse;font-size:.88rem;margin:10px 0}
+th,td{padding:8px 10px;border:1px solid var(--borda);text-align:left;vertical-align:top}
+th{background:#16233f}
+dt{font-weight:700;color:#fff;margin-top:12px}
+dd{margin:2px 0 0 0;color:var(--mudo)}
+.svgbox{background:#0a0f1c;border:1px solid var(--borda);border-radius:12px;padding:10px;margin:14px 0}
+figcaption{color:var(--mudo);font-size:.82rem;margin-top:6px;text-align:center}
+footer{color:#475569;font-size:.8rem;margin-top:50px;border-top:1px solid var(--borda);padding-top:14px}
+kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1px 7px;font-size:.82rem}
+</style>
+</head>
+<body>
+<nav><div class="wrap2">
+<a href="#oque">O que é</a><a href="#instalacao">Instalação</a><a href="#funciona">Como funciona</a>
+<a href="#uso">Uso guiado</a><a href="#relatorios">Relatórios</a><a href="#custodia">Custódia</a>
+<a href="#problemas">Problemas</a><a href="#glossario">Glossário</a><a href="#tecnica">Seção técnica</a>
+</div></nav>
+<div class="wrap">
+
+<header>
+<h1>⛏️ GARIMPO <small>· manual ilustrado · família DEIVOSINT</small></h1>
+<p class="sub">Motor de pivô OSINT passivo · 100% Python padrão · sem chaves de API · com cadeia de custódia forense · dossiê em português</p>
+</header>
+
+<!-- ==================== O QUE É ==================== -->
+<h2 id="oque">1 · O que é o GARIMPO (para quem nunca viu)</h2>
+<div class="card">
+<p>Você entrega <b>um ponto de partida</b> — um site, um e-mail, um CNPJ, um usuário do GitHub, um IP — e o GARIMPO:</p>
+<ol>
+<li><b>Descobre sozinho o tipo</b> do que você digitou;</li>
+<li><b>Consulta só fontes públicas e passivas</b> (ele nunca "bate na porta" do alvo);</li>
+<li><b>Segue as pistas</b>: cada descoberta confiável vira um novo ponto a investigar, dentro de limites rígidos;</li>
+<li><b>Guarda cada resposta bruta com lacre digital</b> (hash SHA-256 encadeado) — se alguém alterar um byte depois, o lacre denuncia;</li>
+<li><b>Entrega um dossiê em HTML</b>, em português, que abre em qualquer navegador, sem internet.</li>
+</ol>
+<p>Tudo isso <b>sem instalar nada</b> além do Python que provavelmente já está no seu computador, e <b>sem nenhuma chave de API</b>.</p>
+</div>
+<div class="aviso">⚖️ <b>Uso legal e autorizado apenas.</b> "Passivo" significa que o alvo não recebe requisições suas — mas cada serviço público consultado (Google DNS, crt.sh, Shodan, BrasilAPI…) vê o que você pesquisou. Passivo não é anônimo.</div>
+
+<!-- ==================== INSTALAÇÃO ==================== -->
+<h2 id="instalacao">2 · Instalação passo a passo (escolha seu sistema)</h2>
+<div class="card" style="padding-top:8px">
+<input type="radio" name="so" id="so-win" checked>
+<input type="radio" name="so" id="so-lin">
+<input type="radio" name="so" id="so-mac">
+<div class="abas">
+<label for="so-win">🪟 Windows</label>
+<label for="so-lin">🐧 Linux</label>
+<label for="so-mac">🍎 macOS</label>
+</div>
+
+<div class="painel win">
+<div class="passo"><div class="num">1</div><div>Abra o menu Iniciar, digite <code>cmd</code> e pressione <kbd>Enter</kbd> para abrir o <b>Prompt de Comando</b>.</div></div>
+<div class="passo"><div class="num">2</div><div>Digite <code>python --version</code>. Se aparecer <code>Python 3.9</code> ou maior, pule para o passo 4.</div></div>
+<div class="passo"><div class="num">3</div><div>Se não tiver Python: baixe em <code>python.org/downloads</code>, execute o instalador e <b>marque a caixa "Add Python to PATH"</b> antes de clicar em Install.</div></div>
+<div class="passo"><div class="num">4</div><div>Baixe/extraia a pasta do GARIMPO (ex.: <code>C:\GARIMPO</code>).</div></div>
+<div class="passo"><div class="num">5</div><div>Dê <b>dois cliques</b> em <code>lancadores\GARIMPO-Demo-Windows.bat</code>. O dossiê de demonstração abre no navegador. Pronto. ✔</div></div>
+<div class="ok">Para investigar de verdade: dois cliques em <code>GARIMPO-Investigar-Windows.bat</code>, digite o alvo e <kbd>Enter</kbd>.</div>
+</div>
+
+<div class="painel lin">
+<div class="passo"><div class="num">1</div><div>Abra o Terminal (<kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>T</kbd> na maioria das distros).</div></div>
+<div class="passo"><div class="num">2</div><div>Digite <code>python3 --version</code>. Qualquer 3.9+ serve. (Faltando: <code>sudo apt install python3</code> ou equivalente da sua distro.)</div></div>
+<div class="passo"><div class="num">3</div><div>Entre na pasta do GARIMPO: <code>cd caminho/para/garimpo</code>.</div></div>
+<div class="passo"><div class="num">4</div><div>Rode a demonstração: <code>./lancadores/garimpo-demo.sh</code> (ou <code>python3 garimpo.py demo</code>). O dossiê abre no navegador. ✔</div></div>
+</div>
+
+<div class="painel mac">
+<div class="passo"><div class="num">1</div><div>Abra o Terminal (<kbd>⌘</kbd>+<kbd>Espaço</kbd>, digite "Terminal", <kbd>Enter</kbd>).</div></div>
+<div class="passo"><div class="num">2</div><div>Digite <code>python3 --version</code>. O macOS oferece instalar as ferramentas de linha de comando se faltar — aceite.</div></div>
+<div class="passo"><div class="num">3</div><div>Entre na pasta: <code>cd caminho/para/garimpo</code>.</div></div>
+<div class="passo"><div class="num">4</div><div>Rode: <code>./lancadores/garimpo-demo.sh</code>. O dossiê abre no Safari/Chrome. ✔</div></div>
+<div class="aviso">Se o macOS bloquear o script: <code>chmod +x lancadores/*.sh</code> e rode de novo.</div>
+</div>
+</div>
+
+<!-- ==================== COMO FUNCIONA ==================== -->
+<h2 id="funciona">3 · Como funciona (diagramas)</h2>
+
+<figure class="svgbox">
+<svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<defs>
+<marker id="seta" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto">
+<path d="M0,0 L7,3 L0,6 z" fill="#64748b"/></marker>
+</defs>
+<!-- faixa 1: entrada -->
+<g font-family="system-ui" font-size="13">
+<rect x="20" y="40" width="170" height="70" rx="12" fill="#16233f" stroke="#3b82f6" stroke-width="2"/>
+<text x="105" y="68" fill="#fff" text-anchor="middle" font-weight="700">VOCÊ DIGITA</text>
+<text x="105" y="90" fill="#94a3b8" text-anchor="middle" font-size="11">site · e-mail · CNPJ · IP…</text>
+
+<line x1="190" y1="75" x2="250" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#seta)"/>
+
+<rect x="252" y="40" width="170" height="70" rx="12" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/>
+<text x="337" y="68" fill="#fff" text-anchor="middle" font-weight="700">DETECTOR</text>
+<text x="337" y="90" fill="#94a3b8" text-anchor="middle" font-size="11">reconhece o tipo sozinho</text>
+
+<line x1="422" y1="75" x2="482" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#seta)"/>
+
+<rect x="484" y="40" width="170" height="70" rx="12" fill="#042f2e" stroke="#10b981" stroke-width="2"/>
+<text x="569" y="62" fill="#fff" text-anchor="middle" font-weight="700">FONTES PASSIVAS</text>
+<text x="569" y="82" fill="#94a3b8" text-anchor="middle" font-size="11">RDAP · DNS · crt.sh · Shodan</text>
+<text x="569" y="98" fill="#94a3b8" text-anchor="middle" font-size="11">Wayback · GitHub · BrasilAPI</text>
+
+<line x1="654" y1="75" x2="714" y2="75" stroke="#64748b" stroke-width="2" marker-end="url(#seta)"/>
+
+<rect x="716" y="40" width="180" height="70" rx="12" fill="#1c1917" stroke="#f59e0b" stroke-width="2"/>
+<text x="806" y="68" fill="#fff" text-anchor="middle" font-weight="700">CUSTÓDIA 🔒</text>
+<text x="806" y="90" fill="#94a3b8" text-anchor="middle" font-size="11">cada byte lacrado (SHA-256)</text>
+
+<!-- loop pivô -->
+<path d="M 569 110 C 569 170, 337 170, 337 112" fill="none" stroke="#8b5cf6"
+stroke-width="2" stroke-dasharray="6 4" marker-end="url(#seta)"/>
+<text x="453" y="162" fill="#a78bfa" text-anchor="middle" font-size="12" font-weight="600">
+PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
+
+<!-- saída -->
+<line x1="806" y1="110" x2="806" y2="210" stroke="#64748b" stroke-width="2" marker-end="url(#seta)"/>
+<rect x="580" y="214" width="320" height="110" rx="12" fill="#111a2e" stroke="#3b82f6" stroke-width="2"/>
+<text x="740" y="242" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">DOSSIÊ HTML (pt-BR)</text>
+<text x="740" y="266" fill="#94a3b8" text-anchor="middle" font-size="11">grafo de vínculos em SVG</text>
+<text x="740" y="284" fill="#94a3b8" text-anchor="middle" font-size="11">cada fato com a fonte ao lado</text>
+<text x="740" y="302" fill="#94a3b8" text-anchor="middle" font-size="11">abre offline, em qualquer navegador</text>
+
+<!-- orçamento -->
+<rect x="20" y="214" width="320" height="110" rx="12" fill="#111a2e" stroke="#ef4444" stroke-width="2"/>
+<text x="180" y="242" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">ORÇAMENTO (freios)</text>
+<text x="180" y="266" fill="#94a3b8" text-anchor="middle" font-size="11">profundidade máx. de pivô</text>
+<text x="180" y="284" fill="#94a3b8" text-anchor="middle" font-size="11">teto de entidades no grafo</text>
+<text x="180" y="302" fill="#94a3b8" text-anchor="middle" font-size="11">teto duro de requisições HTTP</text>
+</g>
+</svg>
+<figcaption>Fig. 1 — Arquitetura: entrada → detecção → fontes passivas → custódia → dossiê, com o pivô realimentando sob orçamento.</figcaption>
+</figure>
+
+<figure class="svgbox">
+<svg viewBox="0 0 920 300" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<g font-family="system-ui" font-size="12">
+<!-- alvo isolado -->
+<rect x="700" y="30" width="190" height="80" rx="12" fill="#1c1917" stroke="#ef4444" stroke-width="2" stroke-dasharray="8 5"/>
+<text x="795" y="60" fill="#fff" text-anchor="middle" font-weight="700">INFRA DO ALVO</text>
+<text x="795" y="82" fill="#f87171" text-anchor="middle" font-size="11">NUNCA recebe requisição sua</text>
+<line x1="470" y1="70" x2="690" y2="70" stroke="#ef4444" stroke-width="2"/>
+<line x1="560" y1="50" x2="600" y2="90" stroke="#ef4444" stroke-width="3"/>
+<line x1="600" y1="50" x2="560" y2="90" stroke="#ef4444" stroke-width="3"/>
+
+<!-- você -->
+<rect x="30" y="30" width="150" height="80" rx="12" fill="#16233f" stroke="#3b82f6" stroke-width="2"/>
+<text x="105" y="62" fill="#fff" text-anchor="middle" font-weight="700">SEU PC</text>
+<text x="105" y="84" fill="#94a3b8" text-anchor="middle" font-size="11">GARIMPO</text>
+
+<!-- terceiros -->
+<rect x="250" y="140" width="420" height="130" rx="12" fill="#042f2e" stroke="#10b981" stroke-width="2"/>
+<text x="460" y="166" fill="#fff" text-anchor="middle" font-weight="700" font-size="13">TERCEIROS PÚBLICOS (eles veem sua consulta)</text>
+<text x="460" y="192" fill="#94a3b8" text-anchor="middle">registro.br/rdap.org · dns.google · crt.sh</text>
+<text x="460" y="212" fill="#94a3b8" text-anchor="middle">internetdb.shodan.io · web.archive.org</text>
+<text x="460" y="232" fill="#94a3b8" text-anchor="middle">api.github.com · gravatar.com · brasilapi.com.br</text>
+<text x="460" y="256" fill="#6ee7b7" text-anchor="middle" font-size="11">respondem com o que JÁ TÊM indexado sobre o alvo</text>
+
+<path d="M 105 110 C 105 190, 180 200, 246 200" fill="none" stroke="#10b981" stroke-width="2" marker-end="url(#seta)"/>
+<path d="M 250 180 C 190 170, 150 150, 120 114" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+<text x="120" y="165" fill="#6ee7b7" font-size="11">consulta</text>
+<text x="188" y="135" fill="#6ee7b7" font-size="11">resposta</text>
+</g>
+</svg>
+<figcaption>Fig. 2 — Modelo passivo: você conversa com terceiros públicos; o caminho até o alvo é cortado por projeto.</figcaption>
+</figure>
+
+<h3>Legenda do grafo do dossiê</h3>
+<div class="card">
+<svg viewBox="0 0 900 70" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<g font-family="system-ui" font-size="12" fill="#e2e8f0">
+<circle cx="40" cy="30" r="14" fill="#3b82f6"/><text x="40" y="60" text-anchor="middle">domínio</text>
+<circle cx="140" cy="30" r="14" fill="#f59e0b"/><text x="140" y="60" text-anchor="middle">IP</text>
+<circle cx="240" cy="30" r="14" fill="#10b981"/><text x="240" y="60" text-anchor="middle">e-mail</text>
+<circle cx="340" cy="30" r="14" fill="#8b5cf6"/><text x="340" y="60" text-anchor="middle">username</text>
+<circle cx="440" cy="30" r="14" fill="#ef4444"/><text x="440" y="60" text-anchor="middle">CNPJ/CPF</text>
+<circle cx="540" cy="30" r="14" fill="#ec4899"/><text x="540" y="60" text-anchor="middle">pessoa</text>
+<circle cx="640" cy="30" r="14" fill="#06b6d4"/><text x="640" y="60" text-anchor="middle">URL</text>
+<line x1="700" y1="30" x2="770" y2="30" stroke="#94a3b8" stroke-width="2"/>
+<text x="735" y="60" text-anchor="middle">vínculo</text>
+<circle cx="830" cy="30" r="20" fill="#3b82f6"/><circle cx="878" cy="30" r="12" fill="#3b82f6"/>
+<text x="852" y="60" text-anchor="middle">maior = seed</text>
+</g>
+</svg>
+</div>
+
+<!-- ==================== USO GUIADO ==================== -->
+<h2 id="uso">4 · Uso guiado (uma ação por vez)</h2>
+
+<div class="card">
+<h3>Ação única nº 1 — investigue um domínio</h3>
+<pre><code>python3 garimpo.py investigar exemplo.com.br</code></pre>
+<p>É isso. Tudo abaixo é o que você vai <b>ver</b> acontecer:</p>
+<div class="term">
+<div class="barra"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i>&nbsp;Terminal — captura anotada</div>
+<pre><code>⛏️  GARIMPO 1.0.0 · seed: exemplo.com.br (detectado: dominio)   <span class="mark">1</span>
+    caso: casos/2026-10-15_090000_exemplo.com.br · modo: PASSIVO <span class="mark">2</span>
+
+[0] DOMINIO → exemplo.com.br                                    <span class="mark">3</span>
+  → [rdap_registro_br] https://rdap.registro.br/domain/...      <span class="mark">4</span>
+    [rdap] evento registration: 2019-03-04
+    [dns] A: 203.0.113.10
+    [crtsh] subdomínio (CT): app.exemplo.com.br
+
+[1] IP → 203.0.113.10                                           <span class="mark">5</span>
+    [internetdb] portas vistas pela Shodan: [443]
+
+✔ 3 entidades · 2 vínculos · 9 requisições · 4.2s               <span class="mark">6</span>
+✔ Dossiê: casos/.../dossie.html
+✔ Custódia: casos/.../ledger.jsonl</code></pre>
+</div>
+<div class="legmark"><span class="mark">1</span><span>O detector reconheceu o tipo sozinho — você não disse "é um domínio".</span></div>
+<div class="legmark"><span class="mark">2</span><span>Cada investigação cria sua própria pasta de caso, com data e hora.</span></div>
+<div class="legmark"><span class="mark">3</span><span><code>[0]</code> é a profundidade: 0 = o seed que você digitou.</span></div>
+<div class="legmark"><span class="mark">4</span><span>Cada seta <code>→</code> é uma requisição real; a linha diz a fonte e a URL exata.</span></div>
+<div class="legmark"><span class="mark">5</span><span>O pivô em ação: o IP descoberto no DNS virou novo alvo na profundidade 1.</span></div>
+<div class="legmark"><span class="mark">6</span><span>Resumo final: entidades, vínculos, requisições gastas do orçamento e duração.</span></div>
+</div>
+
+<div class="card">
+<h3>Ação única nº 2 — ajuste os freios quando precisar</h3>
+<pre><code>python3 garimpo.py investigar alvo.com --profundidade 2 --max-entidades 20 --max-requisicoes 50</code></pre>
+<table>
+<tr><th>Opção</th><th>Padrão</th><th>O que controla</th></tr>
+<tr><td><code>--profundidade</code></td><td>1</td><td>quantos saltos de pivô a partir do seed (2 já vai longe)</td></tr>
+<tr><td><code>--max-entidades</code></td><td>12</td><td>teto de nós no grafo</td></tr>
+<tr><td><code>--max-requisicoes</code></td><td>30</td><td>teto <b>duro</b> de requisições HTTP — nunca é ultrapassado</td></tr>
+</table>
+</div>
+
+<div class="card">
+<h3>Ação única nº 3 — cada tipo de alvo, um exemplo</h3>
+<pre><code>python3 garimpo.py investigar clavis.com.br          # domínio (.br usa o RDAP do registro.br)
+python3 garimpo.py investigar 1.1.1.1                # IP → RDAP + portas/CVEs (InternetDB) + PTR
+python3 garimpo.py investigar fulano@provedor.com    # e-mail → Gravatar + DNS do domínio + pivôs
+python3 garimpo.py investigar torvalds               # username → GitHub público
+python3 garimpo.py investigar 11.222.333/0001-81     # CNPJ → Receita (BrasilAPI): razão social, sócios
+python3 garimpo.py investigar "529.982.247-25"       # CPF → SÓ validação offline (decisão ética)
+python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapshot no Wayback</code></pre>
+</div>
+
+<!-- ==================== RELATÓRIOS ==================== -->
+<h2 id="relatorios">5 · Geração e leitura de relatórios</h2>
+<div class="card">
+<p>Todo caso gera automaticamente, na pasta do caso:</p>
+<table>
+<tr><th>Arquivo</th><th>Para quê</th></tr>
+<tr><td><code>dossie.html</code></td><td><b>O relatório humano.</b> Abra com dois cliques: cabeçalho com métricas, grafo SVG de vínculos, e cada entidade em um bloco expansível com os fatos — sempre com a fonte na coluna da esquerda.</td></tr>
+<tr><td><code>caso.json</code></td><td>O mesmo conteúdo legível por máquina — para alimentar outras ferramentas DEIVOSINT, planilhas ou scripts.</td></tr>
+<tr><td><code>ledger.jsonl</code></td><td>A cadeia de custódia (ver seção 6).</td></tr>
+<tr><td><code>evidencias/</code></td><td>A resposta bruta de cada requisição, byte a byte, como chegou.</td></tr>
+</table>
+<div class="ok">💡 Para entregar a alguém: envie a <b>pasta do caso inteira</b>. O dossiê abre offline e a pessoa pode verificar a custódia na máquina dela.</div>
+</div>
+
+<!-- ==================== CUSTÓDIA ==================== -->
+<h2 id="custodia">6 · Cadeia de custódia (o lacre digital)</h2>
+<div class="card">
+<figure class="svgbox" style="margin-top:0">
+<svg viewBox="0 0 900 170" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<g font-family="system-ui" font-size="11">
+<!-- 3 elos -->
+<g>
+<rect x="30" y="30" width="230" height="100" rx="12" fill="#111a2e" stroke="#f59e0b" stroke-width="2"/>
+<text x="145" y="52" fill="#fff" text-anchor="middle" font-weight="700" font-size="12">Registro nº 1</text>
+<text x="145" y="74" fill="#94a3b8" text-anchor="middle">SHA-256 da evidência bruta</text>
+<text x="145" y="92" fill="#94a3b8" text-anchor="middle">hash_anterior = 000…0</text>
+<text x="145" y="114" fill="#fbbf24" text-anchor="middle" font-family="monospace">hash_registro = a4f1…</text>
+</g>
+<line x1="260" y1="80" x2="320" y2="80" stroke="#f59e0b" stroke-width="2" marker-end="url(#seta)"/>
+<g>
+<rect x="322" y="30" width="230" height="100" rx="12" fill="#111a2e" stroke="#f59e0b" stroke-width="2"/>
+<text x="437" y="52" fill="#fff" text-anchor="middle" font-weight="700" font-size="12">Registro nº 2</text>
+<text x="437" y="74" fill="#94a3b8" text-anchor="middle">SHA-256 da evidência bruta</text>
+<text x="437" y="92" fill="#fbbf24" text-anchor="middle" font-family="monospace">hash_anterior = a4f1…</text>
+<text x="437" y="114" fill="#fbbf24" text-anchor="middle" font-family="monospace">hash_registro = 9c2e…</text>
+</g>
+<line x1="552" y1="80" x2="612" y2="80" stroke="#f59e0b" stroke-width="2" marker-end="url(#seta)"/>
+<g>
+<rect x="614" y="30" width="230" height="100" rx="12" fill="#111a2e" stroke="#f59e0b" stroke-width="2"/>
+<text x="729" y="52" fill="#fff" text-anchor="middle" font-weight="700" font-size="12">Registro nº 3</text>
+<text x="729" y="74" fill="#94a3b8" text-anchor="middle">SHA-256 da evidência bruta</text>
+<text x="729" y="92" fill="#fbbf24" text-anchor="middle" font-family="monospace">hash_anterior = 9c2e…</text>
+<text x="729" y="114" fill="#fbbf24" text-anchor="middle" font-family="monospace">hash_registro = 77b0…</text>
+</g>
+<text x="450" y="158" fill="#94a3b8" text-anchor="middle" font-size="12">Alterou 1 byte em qualquer evidência ou registro → todos os elos seguintes quebram.</text>
+</g>
+</svg>
+<figcaption>Fig. 3 — O ledger: cada registro contém o hash do anterior. Adulteração é matematicamente detectável.</figcaption>
+</figure>
+<p><b>Verificar um caso</b> (faça sempre antes de entregar, e peça a quem recebeu que repita):</p>
+<pre><code>python3 garimpo.py verificar casos/2026-10-15_090000_exemplo.com.br</code></pre>
+<p>Resposta esperada: <code>✔ Cadeia de custódia ÍNTEGRA</code>. Qualquer outra coisa lista exatamente qual linha/arquivo foi comprometido.</p>
+</div>
+
+<!-- ==================== PROBLEMAS ==================== -->
+<h2 id="problemas">7 · Solução de problemas</h2>
+<div class="card">
+<table>
+<tr><th>Sintoma</th><th>Causa provável</th><th>Solução</th></tr>
+<tr><td><code>python3: command not found</code></td><td>Python não instalado ou fora do PATH</td><td>No Windows use <code>python</code>; senão instale pelo python.org marcando "Add to PATH"</td></tr>
+<tr><td>Dossiê sai com poucas entidades e muitos "Nenhum fato"</td><td>Rede/firewall/proxy bloqueando as fontes</td><td>Abra o <code>ledger.jsonl</code>: linhas com <code>"status_http": 0</code> trazem o erro exato por fonte. Teste a conexão e rode de novo</td></tr>
+<tr><td>GitHub para de responder</td><td>Limite de 60 requisições/hora sem token</td><td>Espere 1 h ou reduza os pivôs de username</td></tr>
+<tr><td>crt.sh demora muito</td><td>O serviço oscila sob carga</td><td>Normal; cada requisição tem timeout de 15 s e a investigação segue sem ele</td></tr>
+<tr><td>CNPJ não traz dados</td><td>DV inválido (nem chega a consultar) ou BrasilAPI fora do ar</td><td><code>python3 garimpo.py detectar "SEU-CNPJ"</code> precisa responder <code>cnpj</code>; depois confira o ledger</td></tr>
+<tr><td>"Cadeia de custódia COMPROMETIDA"</td><td>Arquivo editado, movido ou corrompido depois da coleta</td><td>Isso é a ferramenta funcionando. Refaça a coleta; nunca edite nada dentro de <code>evidencias/</code></td></tr>
+<tr><td>Acentos estranhos no Windows</td><td>Terminal sem UTF-8</td><td>Use os lançadores <code>.bat</code> (já configuram <code>chcp 65001</code>)</td></tr>
+</table>
+</div>
+
+<!-- ==================== GLOSSÁRIO ==================== -->
+<h2 id="glossario">8 · Glossário</h2>
+<div class="card"><dl>
+<dt>OSINT</dt><dd>Inteligência de fontes abertas: informação pública, coletada legalmente.</dd>
+<dt>Passivo</dt><dd>Coleta que não envia requisições à infraestrutura do alvo — só a terceiros que já têm dados sobre ele.</dd>
+<dt>Seed</dt><dd>O ponto de partida da investigação (o valor que você digitou).</dd>
+<dt>Pivô</dt><dd>Usar uma descoberta como novo ponto de partida (domínio → IP → outros domínios no mesmo IP…).</dd>
+<dt>Entidade</dt><dd>Qualquer coisa investigável: domínio, IP, e-mail, username, CNPJ, pessoa…</dd>
+<dt>Grafo de vínculos</dt><dd>O desenho de bolinhas (entidades) e linhas (relações) do dossiê.</dd>
+<dt>RDAP</dt><dd>Sucessor moderno do WHOIS: dados oficiais de registro de domínios e blocos IP, em JSON.</dd>
+<dt>DoH</dt><dd>DNS sobre HTTPS: consulta DNS criptografada via resolvedor (aqui, dns.google).</dd>
+<dt>CT / crt.sh</dt><dd>Transparência de Certificados: registro público de todo certificado TLS emitido — ótimo para achar subdomínios.</dd>
+<dt>InternetDB</dt><dd>Serviço gratuito da Shodan com portas/vulnerabilidades <i>já indexadas</i> de um IP — consultar não dispara scan.</dd>
+<dt>SHA-256</dt><dd>Impressão digital matemática de um arquivo; mudou 1 bit, muda a impressão inteira.</dd>
+<dt>Cadeia de custódia</dt><dd>Registro à prova de adulteração de quando/como cada evidência foi coletada.</dd>
+<dt>Ledger hash-encadeado</dt><dd>Lista em que cada registro inclui o hash do anterior — como elos de uma corrente.</dd>
+<dt>Orçamento</dt><dd>Os freios da investigação: profundidade, nº de entidades e nº de requisições.</dd>
+<dt>Keyless</dt><dd>Fonte que não exige chave de API nem cadastro.</dd>
+<dt>stdlib</dt><dd>A biblioteca padrão do Python — o GARIMPO usa só ela; nada de <code>pip install</code>.</dd>
+</dl></div>
+
+<!-- ==================== TÉCNICA ==================== -->
+<h2 id="tecnica">9 · Seção técnica</h2>
+<div class="card">
+<h3>Origem: engenharia reversa do OpenOSINT</h3>
+<p>O GARIMPO nasceu da dissecação do <code>OpenOSINT/OpenOSINT</code> (~22 mil linhas, 100 módulos): manteve o passivo-por-padrão, a tabela de ruído e o orçamento rígido; corrigiu 9 lacunas (Brasil ausente, dependência de LLM/chaves, extração por regex frágil, proveniência sem forense, instalação pesada, fontes keyless ignoradas, relatórios sem pt-BR…). O estudo completo, lacuna a lacuna com evidência no código, está em <code>docs/ENGENHARIA-REVERSA-OPENOSINT.md</code>.</p>
+
+<h3>Resultado dos testes (ambiente de nuvem, 2026-10-15)</h3>
+<table>
+<tr><th>Bateria</th><th>Resultado</th></tr>
+<tr><td>Detecção de tipos (CPF/CNPJ com DV, e-mail, IP, domínio) — 6 casos</td><td>✅ 6/6</td></tr>
+<tr><td>Demo offline → dossiê HTML</td><td>✅ gerado e renderizado</td></tr>
+<tr><td>Verificação de custódia em caso íntegro</td><td>✅ ÍNTEGRA</td></tr>
+<tr><td>Teste de adulteração (1 byte alterado em evidência)</td><td>✅ COMPROMETIDA detectada na linha exata</td></tr>
+<tr><td>Pipeline ao vivo ponta a ponta (registro.br)</td><td>✅ executou; ⚠️ fontes bloqueadas pelo firewall da sandbox (403 do proxy) — cada erro foi registrado na custódia; validar na máquina local</td></tr>
+<tr><td>Execução em modo isolado (<code>python3 -I</code>, só stdlib)</td><td>✅</td></tr>
+</table>
+<p>Detalhes, comandos e pendências: <code>testes/RELATORIO-DE-TESTES.md</code>.</p>
+
+<h3>Decisões de projeto</h3>
+<ul>
+<li><b>Sempre passivo</b> — não existe flag de modo ativo; a classe de ferramenta que "toca o alvo" ficou fora por projeto, não por configuração.</li>
+<li><b>CPF só offline</b> — validação de dígitos verificadores e região fiscal; nenhuma consulta externa, por decisão ética documentada no código.</li>
+<li><b>Extração estruturada</b> — cada fonte devolve tuplas <code>(tipo, valor, relação, confiança)</code> a partir do JSON da API; o pivô nunca interpreta texto renderizado.</li>
+<li><b>Confiança ≥ 0,6 para pivotar</b> — herdada da calibração do OpenOSINT; abaixo disso a descoberta entra no grafo, mas não vira novo alvo.</li>
+<li><b>Falha nunca derruba</b> — timeout 15 s/requisição; erro vira registro de custódia com <code>status_http: 0</code> e a investigação continua.</li>
+</ul>
+</div>
+
+<footer>Manual do GARIMPO 1.0.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
+</div>
+</body>
+</html>
