@@ -130,14 +130,71 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <div class="painel mac">
 <div class="passo"><div class="num">1</div><div>Abra o Terminal (<kbd>⌘</kbd>+<kbd>Espaço</kbd>, digite "Terminal", <kbd>Enter</kbd>).</div></div>
 <div class="passo"><div class="num">2</div><div>Digite <code>python3 --version</code>. O macOS oferece instalar as ferramentas de linha de comando se faltar — aceite.</div></div>
-<div class="passo"><div class="num">3</div><div>Entre na pasta: <code>cd caminho/para/garimpo</code>.</div></div>
-<div class="passo"><div class="num">4</div><div>Rode: <code>./lancadores/garimpo-demo.sh</code>. O dossiê abre no Safari/Chrome. ✔</div></div>
-<div class="aviso">Se o macOS bloquear o script: <code>chmod +x lancadores/*.sh</code> e rode de novo.</div>
+<div class="passo"><div class="num">3</div><div>No Finder, abra a pasta <code>lancadores</code> do GARIMPO.</div></div>
+<div class="passo"><div class="num">4</div><div>Dê <b>dois cliques</b> em <code>GARIMPO-Demo-macOS.command</code>. O dossiê abre no Safari/Chrome. ✔</div></div>
+<div class="aviso">Na primeira vez o macOS pode dizer "desenvolvedor não identificado": clique com o <b>botão direito → Abrir → Abrir</b>. Só uma vez. Se ainda assim não abrir: no Terminal, <code>chmod +x lancadores/*.command</code>.</div>
+<div class="ok">Para investigar de verdade: dois cliques em <code>GARIMPO-Investigar-macOS.command</code>, digite o alvo e <kbd>Enter</kbd> — o dossiê abre sozinho no fim.</div>
 </div>
 </div>
 
 <!-- ==================== COMO FUNCIONA ==================== -->
 <h2 id="funciona">3 · Como funciona (diagramas)</h2>
+
+<h3>A máquina — figura interativa</h3>
+<div class="card">
+<p>O GARIMPO desenhado como uma bancada de ensaio. O <b>carro</b> leva sua amostra (o seed) pelo trilho; cada <b>estação</b> é uma fonte pública; cada descida de <b>êmbolo</b> é uma requisição; cada <b>frasco</b> é uma evidência lacrada, presa ao anterior por um elo; o <b>mostrador</b> é o orçamento. Passe o mouse para guiar o carro.</p>
+<iframe src="figura/garimpo-figura.html" title="Bancada GARIMPO — figura interativa" loading="lazy" style="width:100%;aspect-ratio:7/6;border:0;border-radius:12px;background:#111"></iframe>
+<p style="font-size:.84rem;color:var(--mudo)">Não carregou? Abra direto: <code>manual/figura/garimpo-figura.html</code> (tema claro: <code>garimpo-figura-light.html</code>).</p>
+</div>
+
+<h3>A jornada de uma investigação</h3>
+<figure class="svgbox">
+<svg viewBox="0 0 920 250" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<g font-family="system-ui" font-size="12">
+<line x1="60" y1="70" x2="860" y2="70" stroke="#1e293b" stroke-width="4"/>
+<g>
+<circle cx="70" cy="70" r="22" fill="#16233f" stroke="#3b82f6" stroke-width="2"/><text x="70" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">1</text>
+<text x="70" y="118" fill="#fff" text-anchor="middle" font-weight="700">Digitar o alvo</text>
+<text x="70" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">ou 2 cliques</text>
+<text x="70" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">no lançador</text>
+</g>
+<g>
+<circle cx="230" cy="70" r="22" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/><text x="230" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">2</text>
+<text x="230" y="118" fill="#fff" text-anchor="middle" font-weight="700">Tipo detectado</text>
+<text x="230" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">CPF/CNPJ inválido</text>
+<text x="230" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">para aqui, sem consulta</text>
+</g>
+<g>
+<circle cx="390" cy="70" r="22" fill="#042f2e" stroke="#10b981" stroke-width="2"/><text x="390" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">3</text>
+<text x="390" y="118" fill="#fff" text-anchor="middle" font-weight="700">Fontes consultadas</text>
+<text x="390" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">cada resposta bruta</text>
+<text x="390" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">é lacrada na hora</text>
+</g>
+<g>
+<circle cx="550" cy="70" r="22" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/><text x="550" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">4</text>
+<text x="550" y="118" fill="#fff" text-anchor="middle" font-weight="700">Pivô</text>
+<text x="550" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">volta ao passo 3 até</text>
+<text x="550" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">bater um dos freios</text>
+<path d="M 540 46 C 520 10, 410 10, 398 44" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#seta)"/>
+</g>
+<g>
+<circle cx="710" cy="70" r="22" fill="#111a2e" stroke="#3b82f6" stroke-width="2"/><text x="710" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">5</text>
+<text x="710" y="118" fill="#fff" text-anchor="middle" font-weight="700">Ler o dossiê</text>
+<text x="710" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">grafo + fatos com</text>
+<text x="710" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">a fonte de cada um</text>
+</g>
+<g>
+<circle cx="860" cy="70" r="22" fill="#1c1917" stroke="#f59e0b" stroke-width="2"/><text x="860" y="75" fill="#fff" text-anchor="middle" font-weight="700" font-size="14">6</text>
+<text x="860" y="118" fill="#fff" text-anchor="middle" font-weight="700">Verificar e entregar</text>
+<text x="860" y="136" fill="#94a3b8" text-anchor="middle" font-size="11">"ÍNTEGRA" → envie</text>
+<text x="860" y="152" fill="#94a3b8" text-anchor="middle" font-size="11">a pasta do caso</text>
+</g>
+<rect x="40" y="186" width="840" height="44" rx="10" fill="#111a2e" stroke="#1e293b"/>
+<text x="460" y="213" fill="#94a3b8" text-anchor="middle" font-size="12">Você só age nos passos 1, 5 e 6. Os passos 2–4 são automáticos e levam de segundos a ~2 minutos.</text>
+</g>
+</svg>
+<figcaption>Fig. 0 — Jornada: do alvo digitado ao caso verificado e entregue.</figcaption>
+</figure>
 
 <figure class="svgbox">
 <svg viewBox="0 0 920 360" xmlns="http://www.w3.org/2000/svg" style="width:100%">
@@ -230,7 +287,7 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 
 <h3>Legenda do grafo do dossiê</h3>
 <div class="card">
-<svg viewBox="0 0 900 70" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<svg viewBox="0 0 900 150" xmlns="http://www.w3.org/2000/svg" style="width:100%">
 <g font-family="system-ui" font-size="12" fill="#e2e8f0">
 <circle cx="40" cy="30" r="14" fill="#3b82f6"/><text x="40" y="60" text-anchor="middle">domínio</text>
 <circle cx="140" cy="30" r="14" fill="#f59e0b"/><text x="140" y="60" text-anchor="middle">IP</text>
@@ -238,11 +295,17 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <circle cx="340" cy="30" r="14" fill="#8b5cf6"/><text x="340" y="60" text-anchor="middle">username</text>
 <circle cx="440" cy="30" r="14" fill="#ef4444"/><text x="440" y="60" text-anchor="middle">CNPJ/CPF</text>
 <circle cx="540" cy="30" r="14" fill="#ec4899"/><text x="540" y="60" text-anchor="middle">pessoa</text>
-<circle cx="640" cy="30" r="14" fill="#06b6d4"/><text x="640" y="60" text-anchor="middle">URL</text>
-<line x1="700" y1="30" x2="770" y2="30" stroke="#94a3b8" stroke-width="2"/>
-<text x="735" y="60" text-anchor="middle">vínculo</text>
-<circle cx="830" cy="30" r="20" fill="#3b82f6"/><circle cx="878" cy="30" r="12" fill="#3b82f6"/>
-<text x="852" y="60" text-anchor="middle">maior = seed</text>
+<circle cx="640" cy="30" r="14" fill="#f97316"/><text x="640" y="60" text-anchor="middle">organização</text>
+<circle cx="740" cy="30" r="14" fill="#06b6d4"/><text x="740" y="60" text-anchor="middle">URL</text>
+<circle cx="840" cy="30" r="14" fill="#eab308"/><text x="840" y="60" text-anchor="middle">telefone</text>
+<circle cx="40" cy="105" r="14" fill="#64748b"/><text x="40" y="135" text-anchor="middle">hash</text>
+<circle cx="160" cy="105" r="14" fill="#475569"/><text x="160" y="135" text-anchor="middle">doc. inválido</text>
+<line x1="300" y1="105" x2="370" y2="105" stroke="#94a3b8" stroke-width="2"/>
+<text x="335" y="135" text-anchor="middle">vínculo forte</text>
+<line x1="440" y1="105" x2="510" y2="105" stroke="#94a3b8" stroke-width="2" opacity=".45"/>
+<text x="475" y="135" text-anchor="middle">vínculo fraco</text>
+<circle cx="640" cy="105" r="20" fill="#3b82f6"/><circle cx="688" cy="105" r="12" fill="#3b82f6"/>
+<text x="664" y="140" text-anchor="middle">maior = seed</text>
 </g>
 </svg>
 </div>
@@ -256,7 +319,7 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <p>É isso. Tudo abaixo é o que você vai <b>ver</b> acontecer:</p>
 <div class="term">
 <div class="barra"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i>&nbsp;Terminal — captura anotada</div>
-<pre><code>⛏️  GARIMPO 1.0.0 · seed: exemplo.com.br (detectado: dominio)   <span class="mark">1</span>
+<pre><code>⛏️  GARIMPO 1.1.0 · seed: exemplo.com.br (detectado: dominio)   <span class="mark">1</span>
     caso: casos/2026-10-15_090000_exemplo.com.br · modo: PASSIVO <span class="mark">2</span>
 
 [0] DOMINIO → exemplo.com.br                                    <span class="mark">3</span>
@@ -299,7 +362,8 @@ python3 garimpo.py investigar fulano@provedor.com    # e-mail → Gravatar + DNS
 python3 garimpo.py investigar torvalds               # username → GitHub público
 python3 garimpo.py investigar 11.222.333/0001-81     # CNPJ → Receita (BrasilAPI): razão social, sócios
 python3 garimpo.py investigar "529.982.247-25"       # CPF → SÓ validação offline (decisão ética)
-python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapshot no Wayback</code></pre>
+python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapshot no Wayback
+python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo, só offline</code></pre>
 </div>
 
 <!-- ==================== RELATÓRIOS ==================== -->
@@ -367,7 +431,10 @@ python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapsh
 <tr><td>crt.sh demora muito</td><td>O serviço oscila sob carga</td><td>Normal; cada requisição tem timeout de 15 s e a investigação segue sem ele</td></tr>
 <tr><td>CNPJ não traz dados</td><td>DV inválido (nem chega a consultar) ou BrasilAPI fora do ar</td><td><code>python3 garimpo.py detectar "SEU-CNPJ"</code> precisa responder <code>cnpj</code>; depois confira o ledger</td></tr>
 <tr><td>"Cadeia de custódia COMPROMETIDA"</td><td>Arquivo editado, movido ou corrompido depois da coleta</td><td>Isso é a ferramenta funcionando. Refaça a coleta; nunca edite nada dentro de <code>evidencias/</code></td></tr>
-<tr><td>Acentos estranhos no Windows</td><td>Terminal sem UTF-8</td><td>Use os lançadores <code>.bat</code> (já configuram <code>chcp 65001</code>)</td></tr>
+<tr><td>Acentos estranhos no Windows</td><td>Terminal sem UTF-8</td><td>Use os lançadores <code>.bat</code> (já configuram <code>chcp 65001</code> e <code>PYTHONUTF8=1</code>); a ferramenta também força UTF-8 na saída</td></tr>
+<tr><td>Detectou <code>documento_invalido</code></td><td>Você digitou algo no formato de CPF/CNPJ, mas os dígitos verificadores não batem</td><td>Quase sempre é erro de digitação. Confira o número; nada foi consultado</td></tr>
+<tr><td>Telefone virou <code>username</code> ou <code>pessoa</code></td><td>Menos de 10 dígitos (faltou o DDD)</td><td>Digite com DDD: <code>(31) 99999-8888</code> ou <code>+55 31 99999-8888</code></td></tr>
+<tr><td>macOS: o <code>.command</code> não abre</td><td>Gatekeeper bloqueia scripts baixados</td><td>Botão direito → Abrir → Abrir (uma vez só)</td></tr>
 </table>
 </div>
 
@@ -390,6 +457,8 @@ python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapsh
 <dt>Orçamento</dt><dd>Os freios da investigação: profundidade, nº de entidades e nº de requisições.</dd>
 <dt>Keyless</dt><dd>Fonte que não exige chave de API nem cadastro.</dd>
 <dt>stdlib</dt><dd>A biblioteca padrão do Python — o GARIMPO usa só ela; nada de <code>pip install</code>.</dd>
+<dt>Dígito verificador (DV)</dt><dd>Os dois últimos dígitos de CPF/CNPJ, calculados a partir dos outros. Se não batem, o número está errado — o GARIMPO checa isso sem internet.</dd>
+<dt>Profundidade</dt><dd>Quantos saltos de pivô separam uma entidade do seed: 0 é o seed, 1 é o que foi achado a partir dele.</dd>
 </dl></div>
 
 <!-- ==================== TÉCNICA ==================== -->
@@ -401,14 +470,16 @@ python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapsh
 <h3>Resultado dos testes (ambiente de nuvem, 2026-10-15)</h3>
 <table>
 <tr><th>Bateria</th><th>Resultado</th></tr>
-<tr><td>Detecção de tipos (CPF/CNPJ com DV, e-mail, IP, domínio) — 6 casos</td><td>✅ 6/6</td></tr>
-<tr><td>Demo offline → dossiê HTML</td><td>✅ gerado e renderizado</td></tr>
-<tr><td>Verificação de custódia em caso íntegro</td><td>✅ ÍNTEGRA</td></tr>
-<tr><td>Teste de adulteração (1 byte alterado em evidência)</td><td>✅ COMPROMETIDA detectada na linha exata</td></tr>
-<tr><td>Pipeline ao vivo ponta a ponta (registro.br)</td><td>✅ executou; ⚠️ fontes bloqueadas pelo firewall da sandbox (403 do proxy) — cada erro foi registrado na custódia; validar na máquina local</td></tr>
-<tr><td>Execução em modo isolado (<code>python3 -I</code>, só stdlib)</td><td>✅</td></tr>
+<tr><td>Suíte automatizada <code>testes/test_garimpo.py</code> (unittest, stdlib, offline)</td><td>✅ <b>21/21</b> em 0,03 s</td></tr>
+<tr><td>— detecção: matriz de 20 valores (CPF/CNPJ válidos e inválidos, telefones BR formatados, IPv4/IPv6, hash, domínios, pessoa, username)</td><td>✅</td></tr>
+<tr><td>— custódia: íntegra; evidência adulterada; ledger forjado; registro removido; caso retomado</td><td>✅ 5/5 — cada adulteração apontada na linha exata</td></tr>
+<tr><td>— parsers das fontes contra fixtures no formato documentado (RDAP registro.br/rdap.org, DoH, crt.sh, Wayback, InternetDB com e sem dados, BrasilAPI, GitHub, e-mail, telefone)</td><td>✅ 9/9</td></tr>
+<tr><td>— pivô BFS (profundidade e confiança &lt; 0,6 barradas), teto duro de requisições, demo idempotente, dossiê à prova de injeção de HTML</td><td>✅ 4/4</td></tr>
+<tr><td>Saída redirecionada em cp1252 (cenário Windows)</td><td>✅ sem quebra de encoding</td></tr>
+<tr><td>Figura isométrica: verificação de pontas de linha (temas escuro e claro), desktop, celular 390 px, ciclo completo até "orçamento esgotado" e reinício</td><td>✅ 0 pontas soltas; console limpo</td></tr>
+<tr><td>Pipeline ao vivo ponta a ponta (registro.br)</td><td>✅ executou; ⚠️ fontes bloqueadas pelo firewall da sandbox (403 do proxy) — cada erro foi registrado na custódia; <b>validar na máquina local</b></td></tr>
 </table>
-<p>Detalhes, comandos e pendências: <code>testes/RELATORIO-DE-TESTES.md</code>.</p>
+<p>Rode você mesmo: <code>python3 -m unittest discover -s testes -v</code>. Detalhes e pendências: <code>testes/RELATORIO-DE-TESTES.md</code>.</p>
 
 <h3>Decisões de projeto</h3>
 <ul>
@@ -420,7 +491,7 @@ python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapsh
 </ul>
 </div>
 
-<footer>Manual do GARIMPO 1.0.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
+<footer>Manual do GARIMPO 1.1.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
 </div>
 </body>
 </html>

@@ -52,7 +52,7 @@ import urllib.parse
 import urllib.request
 from collections import deque
 
-VERSAO = "1.0.0"
+VERSAO = "1.1.0"
 USER_AGENT = f"GARIMPO/{VERSAO} (DEIVOSINT; OSINT passivo; +https://github.com/Ridd1kulusC0d3r/toolsR)"
 TIMEOUT = 15  # segundos por requisição
 
@@ -63,12 +63,17 @@ TIMEOUT = 15  # segundos por requisição
 RE_EMAIL = re.compile(r"^[\w.+-]+@[\w-]+(?:\.[\w-]+)*\.[a-z]{2,}$", re.IGNORECASE)
 RE_URL = re.compile(r"^https?://", re.IGNORECASE)
 RE_HASH = re.compile(r"^(?:[0-9a-fA-F]{32}|[0-9a-fA-F]{40}|[0-9a-fA-F]{64})$")
+# O último rótulo (TLD) precisa começar com letra: "111.111.111-11" não é domínio.
 RE_DOMINIO = re.compile(
-    r"^[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9\-]{2,})+$"
+    r"^[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?"
+    r"(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*"
+    r"\.[a-zA-Z][a-zA-Z0-9\-]{1,62}$"
 )
 RE_CPF = re.compile(r"^\d{3}\.?\d{3}\.?\d{3}-?\d{2}$")
 RE_CNPJ = re.compile(r"^\d{2}\.?\d{3}\.?\d{3}/?\d{4}-?\d{2}$")
 RE_TELEFONE = re.compile(r"^\+?\d{7,15}$")
+# Telefone digitado do jeito brasileiro: "+55 31 99999-8888", "(31) 99999-8888"
+RE_TELEFONE_FMT = re.compile(r"^\+?[\d\s().\-]{8,24}$")
 RE_USERNAME = re.compile(r"^[A-Za-z0-9._\-]{2,39}$")
 
 
@@ -111,9 +116,13 @@ def detectar_tipo(valor: str) -> str:
     """Classifica um valor em um tipo de entidade.
 
     Ordem (mais específico primeiro): email → url → ip → hash → cnpj → cpf
-    → telefone → domínio → pessoa (tem espaço) → username.
-    CPF/CNPJ só são aceitos com dígitos verificadores válidos — um número de
-    11 dígitos com DV inválido cai para "telefone", nunca vira CPF por engano.
+    → documento_invalido → telefone → domínio → pessoa (tem espaço) → username.
+
+    CPF/CNPJ só são aceitos com dígitos verificadores válidos. Se o valor está
+    FORMATADO como CPF/CNPJ (pontos, barra, hífen) e o DV falha, vira
+    "documento_invalido" — nunca é consultado como domínio ou telefone.
+    Só dígitos crus com DV inválido caem para "telefone" (11 dígitos também é
+    o tamanho de um celular BR com DDD).
     """
     v = valor.strip()
     if RE_EMAIL.match(v):
@@ -127,11 +136,16 @@ def detectar_tipo(valor: str) -> str:
         pass
     if RE_HASH.match(v):
         return "hash"
-    if RE_CNPJ.match(v) and validar_cnpj(v):
+    eh_cnpj, eh_cpf = RE_CNPJ.match(v), RE_CPF.match(v)
+    if eh_cnpj and validar_cnpj(v):
         return "cnpj"
-    if RE_CPF.match(v) and validar_cpf(v):
+    if eh_cpf and validar_cpf(v):
         return "cpf"
+    if (eh_cnpj or eh_cpf) and not v.isdigit():
+        return "documento_invalido"
     if RE_TELEFONE.match(v):
+        return "telefone"
+    if RE_TELEFONE_FMT.match(v) and 10 <= len(_so_digitos(v)) <= 15:
         return "telefone"
     if RE_DOMINIO.match(v):
         return "dominio"
@@ -159,13 +173,13 @@ class Custodia:
         os.makedirs(self.evid_dir, exist_ok=True)
         self.ledger_path = os.path.join(caso_dir, "ledger.jsonl")
         self._ultimo_hash = "0" * 64
-        if os.path.exists(self.ledger_path):
+        self.seq = 0
+        if os.path.exists(self.ledger_path):  # retoma um caso existente
             with open(self.ledger_path, "r", encoding="utf-8") as f:
                 for linha in f:
                     if linha.strip():
                         self._ultimo_hash = json.loads(linha)["hash_registro"]
-        self.seq = sum(1 for _ in open(self.ledger_path, encoding="utf-8")) \
-            if os.path.exists(self.ledger_path) else 0
+                        self.seq += 1
 
     def registrar(self, fonte: str, url: str, corpo: bytes, status: int) -> dict:
         self.seq += 1
@@ -438,7 +452,7 @@ def fonte_cnpj(c: Cliente, cnpj: str):
     r = c.get_json("brasilapi_cnpj", f"https://brasilapi.com.br/api/cnpj/v1/{d}")
     if r and r.get("razao_social"):
         fatos.append(("brasilapi", f"razão social: {r['razao_social']}"))
-        novas.append(("pessoa", r["razao_social"], "razao_social", 0.9))
+        novas.append(("organizacao", r["razao_social"], "razao_social", 0.9))
         if r.get("nome_fantasia"):
             fatos.append(("brasilapi", f"nome fantasia: {r['nome_fantasia']}"))
         fatos.append(("brasilapi", f"situação: {r.get('descricao_situacao_cadastral')} · "
@@ -514,6 +528,11 @@ FONTES = {
     "url": fonte_url, "hash": fonte_hash, "telefone": fonte_telefone,
     "pessoa": lambda c, v: ([("local", "pessoa registrada no grafo; pivô por nome "
                               "exige buscador (fora do modo keyless)")], []),
+    "organizacao": lambda c, v: ([("local", "organização registrada no grafo; pivô por "
+                                   "nome exige buscador (fora do modo keyless)")], []),
+    "documento_invalido": lambda c, v: ([("local", "formato de CPF/CNPJ com dígitos "
+                                          "verificadores INVÁLIDOS — nenhuma consulta feita; "
+                                          "confira se houve erro de digitação")], []),
 }
 
 TABELA_RUIDO = [
@@ -588,8 +607,8 @@ def investigar(seed: str, orc: Orcamento, caso_dir: str, silencioso: bool = Fals
 
 CORES_TIPO = {"dominio": "#3b82f6", "ip": "#f59e0b", "email": "#10b981",
               "username": "#8b5cf6", "cnpj": "#ef4444", "cpf": "#ef4444",
-              "pessoa": "#ec4899", "url": "#06b6d4", "hash": "#64748b",
-              "telefone": "#eab308"}
+              "pessoa": "#ec4899", "organizacao": "#f97316", "url": "#06b6d4",
+              "hash": "#64748b", "telefone": "#eab308", "documento_invalido": "#475569"}
 
 
 def _svg_grafo(grafo: dict) -> str:
@@ -688,7 +707,8 @@ padding-top:12px}}
 {''.join(secoes)}
 <div class="aviso"><b>Cadeia de custódia:</b> cada resposta bruta está salva em
 <code>evidencias/</code> e registrada em <code>ledger.jsonl</code> com SHA-256
-encadeado. Verifique com <code>python3 garimpo.py verificar {os.path.basename(caso_dir)}</code>.
+encadeado. Verifique com <code>python3 garimpo.py verificar {_html.escape(caso_dir)}</code>
+(a partir da pasta do GARIMPO).
 Fatos vêm de execuções reais das fontes listadas; são pistas a confirmar, não prova.
 Uso legal e autorizado apenas.</div>
 <footer>GARIMPO {VERSAO} · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r)
@@ -705,7 +725,18 @@ Uso legal e autorizado apenas.</div>
 # ---------------------------------------------------------------------------
 
 def rodar_demo(caso_dir: str) -> str:
-    """Gera um caso sintético SEM rede — para conhecer a ferramenta em 10s."""
+    """Gera um caso sintético SEM rede — para conhecer a ferramenta em 10s.
+
+    Idempotente: recomeça o ledger da demo a cada execução (só os arquivos
+    que a própria demo cria; nada mais na pasta é tocado)."""
+    ledger = os.path.join(caso_dir, "ledger.jsonl")
+    evid = os.path.join(caso_dir, "evidencias")
+    if os.path.exists(ledger):
+        os.remove(ledger)
+    if os.path.isdir(evid):
+        for arq in os.listdir(evid):
+            if arq.endswith(".bin"):
+                os.remove(os.path.join(evid, arq))
     custodia = Custodia(caso_dir)
     for fonte, url, corpo in [
         ("rdap", "demo://rdap/exemplo.com.br", b'{"demo": true}'),
@@ -752,6 +783,12 @@ def rodar_demo(caso_dir: str) -> str:
 # ---------------------------------------------------------------------------
 
 def main(argv=None) -> int:
+    # Windows redireciona stdout em cp1252 e quebraria com "✔"/"⛏️": força UTF-8.
+    for fluxo in (sys.stdout, sys.stderr):
+        try:
+            fluxo.reconfigure(encoding="utf-8", errors="replace")
+        except (AttributeError, ValueError):
+            pass
     p = argparse.ArgumentParser(
         prog="garimpo",
         description="GARIMPO — pivô OSINT passivo, keyless, stdlib (DEIVOSINT)")

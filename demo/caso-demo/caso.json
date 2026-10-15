@@ -1,8 +1,8 @@
 {
-  "ferramenta": "GARIMPO 1.0.0 (DEMO offline)",
+  "ferramenta": "GARIMPO 1.1.0 (DEMO offline)",
   "seed": "exemplo.com.br",
   "tipo_seed": "dominio",
-  "iniciado_utc": "2026-10-15T05:20:17.557463+00:00",
+  "iniciado_utc": "2026-10-15T12:48:22.004276+00:00",
   "duracao_s": 0.0,
   "orcamento": {
     "profundidade": 1,

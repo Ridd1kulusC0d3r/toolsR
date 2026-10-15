@@ -20,7 +20,7 @@ python3 garimpo.py demo
 ```
 
 Abra o arquivo `casos/demo/dossie.html` no navegador. É assim que todo dossiê fica.
-*(Ou dê dois cliques no lançador: `lancadores/GARIMPO-Demo-Windows.bat` ou `lancadores/garimpo-demo.sh`.)*
+*(Ou dois cliques no lançador da pasta `lancadores/`: `GARIMPO-Demo-Windows.bat`, `GARIMPO-Demo-macOS.command` ou `garimpo-demo.sh` no Linux.)*
 
 ## ✅ Ação 3 — Primeira investigação real (2 minutos)
 
@@ -28,7 +28,7 @@ Abra o arquivo `casos/demo/dossie.html` no navegador. É assim que todo dossiê 
 python3 garimpo.py investigar exemplo.com.br
 ```
 
-Troque `exemplo.com.br` por um domínio, IP, e-mail, username, CNPJ ou URL **que você tem autorização para investigar**. A ferramenta detecta o tipo sozinha.
+Troque `exemplo.com.br` por um domínio, IP, e-mail, username, CNPJ, telefone ou URL **que você tem autorização para investigar**. A ferramenta detecta o tipo sozinha.
 
 ## ✅ Ação 4 — Verifique a cadeia de custódia (10 segundos)
 
@@ -40,7 +40,7 @@ Deve aparecer: `✔ Cadeia de custódia ÍNTEGRA`.
 
 ## 📖 Quer entender tudo?
 
-Abra **`manual/manual.html`** no navegador: instalação por sistema operacional, diagramas de como funciona, uso guiado, solução de problemas e glossário.
+Abra **`manual/manual.html`** no navegador: instalação por sistema operacional, a figura interativa da "bancada", diagramas de como funciona, uso guiado, solução de problemas e glossário.
 
 ---
 

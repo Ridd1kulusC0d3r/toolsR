@@ -1,53 +1,60 @@
-# Relatório de testes em nuvem — GARIMPO 1.0.0
+# Relatório de testes em nuvem — GARIMPO 1.1.0
 
-**Ambiente:** sandbox Linux (Anthropic cloud), Python 3.x, 2026-10-15 (America/Sao_Paulo).
-**Observação importante do ambiente:** a sandbox de nuvem tem **allowlist de rede** (apenas registries de pacotes e GitHub com escopo). Os endpoints OSINT reais (dns.google, rdap.org, crt.sh, internetdb.shodan.io, brasilapi.com.br, web.archive.org, gravatar.com) retornam `403 Forbidden` do proxy — **bloqueio do ambiente, não defeito da ferramenta**. Na máquina do usuário, com internet normal, essas fontes respondem.
+**Ambiente:** sandbox Linux (Anthropic cloud), Python 3, Chromium headless, 2026-10-15 (America/Sao_Paulo).
+**Limitação do ambiente:** a sandbox tem **allowlist de rede**. Os endpoints OSINT reais (dns.google, rdap.org, rdap.registro.br, crt.sh, internetdb.shodan.io, brasilapi.com.br, web.archive.org, gravatar.com) retornam `403 Forbidden` do proxy — bloqueio do ambiente, não defeito da ferramenta. Por isso os parsers foram testados contra **fixtures no formato documentado** de cada API, e a validação ao vivo fica para a máquina local (seção 5).
 
-## 1. Testes offline (executados e aprovados ✅)
+## 1. Suíte automatizada — `testes/test_garimpo.py` ✅ 21/21
 
-| # | Teste | Comando | Resultado |
-|---|---|---|---|
-| T1 | Detecção de CPF válido | `detectar "529.982.247-25"` | ✅ `cpf` |
-| T2 | Detecção de CNPJ válido | `detectar "11.222.333/0001-81"` | ✅ `cnpj` |
-| T3 | Rejeição de CPF com DV inválido | `detectar "111.111.111-11"` | ✅ não classifica como `cpf` |
-| T4 | Detecção de e-mail | `detectar deivsec@gmail.com` | ✅ `email` |
-| T5 | Detecção de IP | `detectar 8.8.8.8` | ✅ `ip` |
-| T6 | Detecção de domínio `.br` | `detectar registro.br` | ✅ `dominio` |
-| T7 | Demo offline gera dossiê | `demo` | ✅ `casos/demo/dossie.html` criado, abre no navegador |
-| T8 | Cadeia de custódia íntegra | `verificar demo/caso-demo` | ✅ "Cadeia de custódia ÍNTEGRA" |
-| T9 | Tabela de ruído | `fontes` | ✅ imprime nível e destino de cada fonte |
-| T10 | Zero dependências | `python3 -I garimpo.py …` (modo isolado) | ✅ roda só com stdlib |
-
-## 2. Teste de rede ao vivo (executado; degradação graciosa ✅, fontes bloqueadas pelo ambiente ⚠️)
-
-```
-python3 garimpo.py investigar registro.br --profundidade 1 --caso testes/caso-registro-br
+```bash
+python3 -m unittest discover -s testes -v      # 21 testes, ~0,03 s, offline, só stdlib
 ```
 
-- ✅ Pipeline completo executou de ponta a ponta sem exceção: detecção → 7 requisições (RDAP registro.br, DoH A/MX/TXT/DMARC, crt.sh, Wayback) → grafo → dossiê → ledger.
-- ✅ Cada falha de rede foi **registrada na cadeia de custódia** (`ERRO: Tunnel connection failed: 403 Forbidden`, status 0) — nada se perde silenciosamente.
-- ✅ Orçamento respeitado (7/20 requisições), duração 1,66 s.
-- ⚠️ Nenhum dado real retornou **porque o proxy da sandbox bloqueia esses hosts** (confirmado com `curl` direto: `CONNECT tunnel failed, response 403`).
+| Grupo | Testes | O que prova |
+|---|---|---|
+| Detecção | 3 | Matriz de 20 valores: CPF/CNPJ válidos (formatados e crus), CPF/CNPJ formatados com DV inválido → `documento_invalido`, telefones BR (`+55 31 99999-8888`, `(31) 99999-8888`, crus), e-mail, URL, IPv4, IPv6, hash MD5, domínios, pessoa, username. CPF nunca casa com a regex de domínio. Validadores de DV. |
+| Custódia | 5 | Caso íntegro; **evidência adulterada** (linha exata apontada); **ledger forjado** (campo alterado); **registro removido** (corrente quebrada); caso retomado continua a corrente. |
+| Orçamento | 1 | Com teto 0, nenhuma requisição sai. |
+| Fontes (parsers) | 9 | RDAP do registro.br para `.br` e rdap.org para o resto; eventos, nameservers e vCard; DoH → IP; crt.sh → subdomínios (sem o próprio seed); Wayback CDX; InternetDB com dados e com `{"detail": …}`; BrasilAPI → **organização** + sócios; CPF faz **zero** requisições; GitHub → e-mail público; e-mail → domínio; telefone BR formatado → DDD/celular. |
+| Pivô e dossiê | 3 | BFS barra profundidade além do limite e confiança < 0,6; demo idempotente (ledger não duplica); dossiê **escapa HTML** (sem injeção via dado coletado); comando `verificar` impresso com o caminho certo. |
 
-## 3. Teste de adulteração da custódia (executado ✅)
+### Validação dos esquemas usados nas fixtures
+- **InternetDB:** campos `cpes, hostnames, ip, ports, tags, vulns` confirmados no anúncio oficial da Shodan.
+- **BrasilAPI CNPJ:** campos de topo (`razao_social`, `nome_fantasia`, `descricao_situacao_cadastral`, `data_inicio_atividade`, `municipio`, `uf`, `cnae_fiscal_descricao`) confirmados em código de terceiros que consome a API. O formato interno de `qsa` (`nome_socio`, `qualificacao_socio`) **não pôde ser confirmado em documentação nesta sessão** — confira na primeira consulta real a um CNPJ com sócios.
+- RDAP (RFC 9083), DoH JSON do Google, crt.sh `output=json`, Wayback CDX e GitHub `/users`: formatos públicos estáveis, usados conforme a especificação.
 
-Procedimento: alterar 1 byte de um arquivo em `evidencias/` e rodar `verificar`.
-Resultado esperado e obtido: ✅ `✘ Cadeia de custódia COMPROMETIDA … evidência adulterada` — a corrente SHA-256 detecta a modificação.
+## 2. Testes de regressão dos bugs corrigidos na 1.1.0 ✅
 
-## 4. Pendente de validação na máquina do usuário
+| Bug na 1.0.0 | Antes | Agora |
+|---|---|---|
+| CPF formatado com DV inválido | `dominio` (faria RDAP de um CPF) | `documento_invalido`, nenhuma consulta |
+| Telefone BR formatado | `pessoa` | `telefone` |
+| Comando `verificar` no dossiê | só o nome da pasta | caminho completo do caso |
+| Demo rodada 2× | ledger com registros duplicados | ledger recomeça (2 registros) |
+| Razão social de CNPJ | nó `pessoa` | nó `organizacao` |
+| Saída redirecionada no Windows (cp1252) | `UnicodeEncodeError` em `✔`/`⛏️` | saída forçada em UTF-8 + `PYTHONUTF8=1` nos `.bat` |
+| Arquivo do ledger aberto sem fechar | vazamento de handle | leitura única com `with` |
 
-| Fonte | O que validar |
-|---|---|
-| rdap.registro.br / rdap.org | eventos de registro, nameservers, entidades |
-| dns.google (DoH) | A/MX/TXT/SPF/DMARC/PTR |
-| crt.sh | subdomínios via CT (pode ser lento; timeout 15 s por requisição) |
-| internetdb.shodan.io | portas/CVEs/hostnames por IP |
-| brasilapi.com.br | CNPJ → razão social, QSA (pivô para sócios) |
-| api.github.com | perfil por username (limite 60/h sem token) |
-| gravatar.com / web.archive.org | perfil por e-mail / snapshots |
+## 3. Figura isométrica (`manual/figura/`) ✅
 
-**Como validar em 2 minutos:** `python3 garimpo.py investigar registro.br` e conferir se o dossiê traz fatos de `rdap_registro_br`, `dns` e `crtsh`; depois `python3 garimpo.py verificar casos/<caso>`.
+- Verificação de pontas de linha da skill /anatomy: **0 de 531 pontas soltas**, tema escuro e claro.
+- Capturas: desktop 1440, celular 390 px (sem rolagem lateral), tema claro, ciclo completo até `orçamento esgotado · 8/8` e reinício automático para `casa · prof 0 · 0/8`.
+- Console limpo em todas as execuções.
 
-## 5. Veredito
+## 4. Pipeline ao vivo (executado; fontes bloqueadas pelo ambiente ⚠️)
 
-Núcleo lógico (detecção, pivô, orçamento, custódia, dossiê) **aprovado** em nuvem. Camada de fontes ao vivo **bloqueada pelo ambiente de teste** e pronta para validação local — o tratamento de erro já provou degradar graciosamente com todas as fontes fora do ar.
+`python3 garimpo.py investigar registro.br --profundidade 1` executou de ponta a ponta sem exceção: 7 requisições, cada falha `403` registrada na cadeia de custódia com `status_http: 0`, dossiê e ledger gerados, orçamento respeitado.
+
+## 5. Pendente — validar na sua máquina (2 minutos)
+
+```bash
+python3 garimpo.py investigar registro.br          # RDAP registro.br, DNS, crt.sh, Wayback
+python3 garimpo.py investigar 8.8.8.8              # RDAP de IP, InternetDB, PTR
+python3 garimpo.py investigar <um CNPJ com sócios> # confere o formato de qsa
+python3 garimpo.py verificar casos/<caso>
+```
+
+Esperado: fatos com fonte `rdap_registro_br`, `dns`, `crtsh`, `internetdb`, `brasilapi` no dossiê, e `✔ Cadeia de custódia ÍNTEGRA`.
+
+## 6. Veredito
+
+Núcleo (detecção, pivô, orçamento, custódia, dossiê) e figura **aprovados**. Fontes ao vivo **prontas, mas não observadas** nesta sandbox; o tratamento de erro já provou degradar sem perder rastro.

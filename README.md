@@ -11,9 +11,9 @@ Sem `pip install`. Sem API key. Sem LLM. Um arquivo.
 
 ## O que ele faz
 
-Você entrega **um seed** (domínio, IP, e-mail, username, CNPJ, CPF, telefone, URL ou hash — ele detecta sozinho) e o GARIMPO:
+Você entrega **um seed** (domínio, IP, e-mail, username, CNPJ, CPF, telefone — inclusive `(31) 99999-8888` —, URL ou hash; ele detecta sozinho) e o GARIMPO:
 
-1. **Detecta o tipo** da entidade — incluindo CPF e CNPJ com validação de dígitos verificadores offline;
+1. **Detecta o tipo** da entidade — incluindo CPF e CNPJ com validação de dígitos verificadores offline (formato de CPF/CNPJ com DV errado vira `documento_invalido` e não é consultado);
 2. **Consulta só fontes passivas e keyless** — nenhuma requisição toca a infraestrutura do alvo;
 3. **Pivota em BFS com orçamento** — cada descoberta de alta confiança vira novo nó, até os tetos de profundidade, entidades e requisições;
 4. **Hasheia e encadeia cada evidência bruta** (SHA-256 em ledger hash-encadeado) — adulterou um byte, quebrou a corrente;
@@ -45,6 +45,7 @@ python3 garimpo.py detectar VALOR        # só mostra o tipo detectado
 python3 garimpo.py fontes                # tabela de ruído
 python3 garimpo.py verificar CASO_DIR    # reverifica a cadeia de custódia
 python3 garimpo.py demo                  # caso de demonstração 100% offline
+python3 -m unittest discover -s testes -v   # roda a suíte de testes (21, offline)
 ```
 
 Cada caso vira um diretório:
@@ -79,8 +80,10 @@ O GARIMPO nasceu da dissecação completa do [OpenOSINT](https://github.com/Open
 garimpo.py                      # a ferramenta inteira (1 arquivo, stdlib)
 COMECE-AQUI.md                  # comece por aqui (uma ação por vez)
 manual/manual.html              # manual ilustrado para usuários leigos
-lancadores/                     # lançadores de dois cliques (Windows/Linux/macOS)
+manual/figura/                  # figura isométrica interativa (a "bancada"), temas escuro e claro
+lancadores/                     # dois cliques: .bat (Windows), .command (macOS), .sh (Linux)
 demo/                           # caso de demonstração
+testes/test_garimpo.py          # suíte automatizada: 21 testes, unittest, offline
 testes/RELATORIO-DE-TESTES.md   # resultado dos testes em nuvem
 docs/ENGENHARIA-REVERSA-OPENOSINT.md
 ```
