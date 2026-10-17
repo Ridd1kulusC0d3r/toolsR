@@ -1,0 +1,1 @@
+{"cpes": ["cpe:/a:nginx:nginx"], "hostnames": ["exemplo.com.br"], "ip": "203.0.113.10", "ports": [443], "tags": [], "vulns": []}

@@ -1,0 +1,778 @@
+{
+  "versao_esquema": 2,
+  "ferramenta": "GARIMPO 2.0.0 (DEIVOSINT) · DEMO offline (dados fictícios)",
+  "seed": "exemplo.com.br",
+  "tipo_seed": "dominio",
+  "iniciado_utc": "2026-10-08T09:00:00+00:00",
+  "duracao_s": 0.02,
+  "orcamento": {
+    "profundidade": 2,
+    "max_entidades": 15,
+    "max_requisicoes": 140,
+    "requisicoes_feitas": 81
+  },
+  "fontes_usadas": {
+    "rdap_dominio": 5,
+    "dns": 5,
+    "crtsh": 5,
+    "certspotter": 5,
+    "wayback": 5,
+    "urlscan": 5,
+    "brasilapi_cnpj": 1,
+    "rdap_ip": 1,
+    "internetdb": 1,
+    "ptr": 1,
+    "ripestat_ip": 1,
+    "tor_saida": 1,
+    "nota_pessoa": 3,
+    "brasilapi_cep": 1,
+    "email_local": 1,
+    "gravatar": 1,
+    "pgp": 1,
+    "telefone_offline": 1,
+    "ripestat_asn": 1
+  },
+  "grafo": {
+    "no_seed": "dominio:exemplo.com.br",
+    "nos": {
+      "dominio:exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "exemplo.com.br",
+        "profundidade": 0,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "rdap_dominio",
+            "fato": "evento registration: 2019-03-04T12:00:00Z",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "evento expiration: 2027-03-04T12:00:00Z",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "status: active",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "nameserver: ns1.provedor-exemplo.net",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "nameserver: ns2.provedor-exemplo.net",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "registrant: EMPRESA EXEMPLO LTDA",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "rdap_dominio",
+            "fato": "titular (registrant) com CNPJ 11.222.333/0001-81",
+            "evidencias": [
+              1
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "A: 203.0.113.10",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "MX: 10 mail.exemplo.com.br.",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "NS: ns1.provedor-exemplo.net.",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "SPF: v=spf1 include:_spf.provedor-exemplo.net -all",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "SPF delega envio a: _spf.provedor-exemplo.net",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "CAA: 0 issue \"letsencrypt.org",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "autoridade certificadora autorizada: letsencrypt.org",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "dns",
+            "fato": "DMARC: v=DMARC1; p=quarantine",
+            "evidencias": [
+              2,
+              3,
+              4,
+              5,
+              6,
+              7,
+              8,
+              9
+            ]
+          },
+          {
+            "fonte": "crtsh",
+            "fato": "subdomínio (CT): app.exemplo.com.br",
+            "evidencias": [
+              10
+            ]
+          },
+          {
+            "fonte": "crtsh",
+            "fato": "subdomínio (CT): staging.exemplo.com.br",
+            "evidencias": [
+              10
+            ]
+          },
+          {
+            "fonte": "crtsh",
+            "fato": "subdomínio (CT): vpn.exemplo.com.br",
+            "evidencias": [
+              10
+            ]
+          },
+          {
+            "fonte": "crtsh",
+            "fato": "subdomínios únicos em CT (crt.sh): 3",
+            "evidencias": [
+              10
+            ]
+          },
+          {
+            "fonte": "certspotter",
+            "fato": "subdomínio (Certspotter): app.exemplo.com.br",
+            "evidencias": [
+              11
+            ]
+          },
+          {
+            "fonte": "certspotter",
+            "fato": "subdomínio (Certspotter): staging.exemplo.com.br",
+            "evidencias": [
+              11
+            ]
+          },
+          {
+            "fonte": "certspotter",
+            "fato": "subdomínio (Certspotter): vpn.exemplo.com.br",
+            "evidencias": [
+              11
+            ]
+          },
+          {
+            "fonte": "certspotter",
+            "fato": "emissões de certificado vistas: 1 · subdomínios únicos: 3",
+            "evidencias": [
+              11
+            ]
+          },
+          {
+            "fonte": "wayback",
+            "fato": "primeiro snapshot no Internet Archive: 2019-03-12",
+            "evidencias": [
+              12,
+              13
+            ]
+          },
+          {
+            "fonte": "wayback",
+            "fato": "último snapshot no Internet Archive: 2026-10-07",
+            "evidencias": [
+              12,
+              13
+            ]
+          },
+          {
+            "fonte": "urlscan",
+            "fato": "varredura pública 2026-09-30: https://exemplo.com.br/ · IP 203.0.113.10 · EXEMPLO-AS · servidor nginx",
+            "evidencias": [
+              14
+            ]
+          },
+          {
+            "fonte": "urlscan",
+            "fato": "varreduras públicas no urlscan.io: 1",
+            "evidencias": [
+              14
+            ]
+          }
+        ]
+      },
+      "dominio:ns1.provedor-exemplo.net": {
+        "tipo": "dominio",
+        "valor": "ns1.provedor-exemplo.net",
+        "profundidade": 1,
+        "investigado": false,
+        "fatos": []
+      },
+      "dominio:ns2.provedor-exemplo.net": {
+        "tipo": "dominio",
+        "valor": "ns2.provedor-exemplo.net",
+        "profundidade": 1,
+        "investigado": false,
+        "fatos": []
+      },
+      "cnpj:11.222.333/0001-81": {
+        "tipo": "cnpj",
+        "valor": "11.222.333/0001-81",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "razão social: EMPRESA EXEMPLO LTDA",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "nome fantasia: EXEMPLO",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "situação: ATIVA · abertura: 2018-11-20",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "natureza jurídica: Sociedade Empresária Limitada",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "porte: MICRO EMPRESA",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "CNAE principal: Desenvolvimento de programas de computador sob encomenda",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "optante pelo Simples Nacional",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "endereço: PRAÇA DA SÉ 1 · SÉ · SÃO PAULO/SP",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "e-mail no cadastro: contato@exemplo.com.br",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "telefone no cadastro: (11) 30000000",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "sócio (Sócio-Administrador): FULANA DE TAL EXEMPLO",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "brasilapi_cnpj",
+            "fato": "sócio (Sócio): BELTRANO EXEMPLO",
+            "evidencias": [
+              15
+            ]
+          }
+        ]
+      },
+      "ip:203.0.113.10": {
+        "tipo": "ip",
+        "valor": "203.0.113.10",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "rdap_ip",
+            "fato": "bloco: TEST-NET-3",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "rdap_ip",
+            "fato": "faixa: 203.0.113.0 – 203.0.113.255",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "rdap_ip",
+            "fato": "país do registro: BR",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "rdap_ip",
+            "fato": "entidade com papel: registrant",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "internetdb",
+            "fato": "portas vistas pela Shodan: [443, 8443]",
+            "evidencias": [
+              17
+            ]
+          },
+          {
+            "fonte": "internetdb",
+            "fato": "software (CPE): cpe:/a:nginx:nginx",
+            "evidencias": [
+              17
+            ]
+          },
+          {
+            "fonte": "internetdb",
+            "fato": "hostname: exemplo.com.br",
+            "evidencias": [
+              17
+            ]
+          },
+          {
+            "fonte": "ripestat_ip",
+            "fato": "prefixo anunciado: 203.0.113.0/24",
+            "evidencias": [
+              19
+            ]
+          },
+          {
+            "fonte": "ripestat_ip",
+            "fato": "origem BGP: AS64500 — EXEMPLO-AS — documentação RFC 5398",
+            "evidencias": [
+              19
+            ]
+          },
+          {
+            "fonte": "tor_saida",
+            "fato": "não consta entre as 2 saídas Tor da lista oficial",
+            "evidencias": [
+              20
+            ]
+          }
+        ]
+      },
+      "dominio:mail.exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "mail.exemplo.com.br",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": []
+      },
+      "dominio:app.exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "app.exemplo.com.br",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": []
+      },
+      "dominio:staging.exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "staging.exemplo.com.br",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": []
+      },
+      "dominio:vpn.exemplo.com.br": {
+        "tipo": "dominio",
+        "valor": "vpn.exemplo.com.br",
+        "profundidade": 1,
+        "investigado": true,
+        "fatos": []
+      },
+      "organizacao:empresa exemplo ltda": {
+        "tipo": "organizacao",
+        "valor": "EMPRESA EXEMPLO LTDA",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "nota_pessoa",
+            "fato": "registrada no grafo; pivô por nome exige buscador (fora do modo keyless)",
+            "evidencias": []
+          }
+        ]
+      },
+      "cep:01001-000": {
+        "tipo": "cep",
+        "valor": "01001-000",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "brasilapi_cep",
+            "fato": "Praça da Sé · Sé · São Paulo/SP",
+            "evidencias": [
+              77
+            ]
+          },
+          {
+            "fonte": "brasilapi_cep",
+            "fato": "coordenadas aproximadas: -23.5503, -46.6339",
+            "evidencias": [
+              77
+            ]
+          }
+        ]
+      },
+      "email:contato@exemplo.com.br": {
+        "tipo": "email",
+        "valor": "contato@exemplo.com.br",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "email_local",
+            "fato": "domínio do e-mail: exemplo.com.br",
+            "evidencias": []
+          }
+        ]
+      },
+      "telefone:1130000000": {
+        "tipo": "telefone",
+        "valor": "1130000000",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "telefone_offline",
+            "fato": "Brasil · DDD 11 (SP)",
+            "evidencias": []
+          },
+          {
+            "fonte": "telefone_offline",
+            "fato": "fixo ou formato antigo",
+            "evidencias": []
+          },
+          {
+            "fonte": "telefone_offline",
+            "fato": "nenhuma consulta externa — fontes keyless de telefone não são confiáveis",
+            "evidencias": []
+          }
+        ]
+      },
+      "pessoa:fulana de tal exemplo": {
+        "tipo": "pessoa",
+        "valor": "FULANA DE TAL EXEMPLO",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "nota_pessoa",
+            "fato": "registrada no grafo; pivô por nome exige buscador (fora do modo keyless)",
+            "evidencias": []
+          }
+        ]
+      },
+      "pessoa:beltrano exemplo": {
+        "tipo": "pessoa",
+        "valor": "BELTRANO EXEMPLO",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "nota_pessoa",
+            "fato": "registrada no grafo; pivô por nome exige buscador (fora do modo keyless)",
+            "evidencias": []
+          }
+        ]
+      },
+      "asn:as64500": {
+        "tipo": "asn",
+        "valor": "AS64500",
+        "profundidade": 2,
+        "investigado": true,
+        "fatos": [
+          {
+            "fonte": "ripestat_asn",
+            "fato": "titular: EXEMPLO-AS — documentação RFC 5398",
+            "evidencias": [
+              80,
+              81
+            ]
+          },
+          {
+            "fonte": "ripestat_asn",
+            "fato": "anunciando rotas agora",
+            "evidencias": [
+              80,
+              81
+            ]
+          },
+          {
+            "fonte": "ripestat_asn",
+            "fato": "prefixos anunciados: 2 (1 IPv4, 1 IPv6)",
+            "evidencias": [
+              80,
+              81
+            ]
+          }
+        ]
+      },
+      "username:contato": {
+        "tipo": "username",
+        "valor": "contato",
+        "profundidade": 3,
+        "investigado": false,
+        "fatos": []
+      }
+    },
+    "arestas": [
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:ns1.provedor-exemplo.net",
+        "relacao": "nameserver_de",
+        "confianca": 0.5,
+        "fonte": "rdap_dominio"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:ns2.provedor-exemplo.net",
+        "relacao": "nameserver_de",
+        "confianca": 0.5,
+        "fonte": "rdap_dominio"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "cnpj:11.222.333/0001-81",
+        "relacao": "titular_do_dominio",
+        "confianca": 0.9,
+        "fonte": "rdap_dominio"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "ip:203.0.113.10",
+        "relacao": "resolve_para",
+        "confianca": 0.9,
+        "fonte": "dns"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:mail.exemplo.com.br",
+        "relacao": "servidor_de_email",
+        "confianca": 0.7,
+        "fonte": "dns"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:app.exemplo.com.br",
+        "relacao": "subdominio_de",
+        "confianca": 0.8,
+        "fonte": "crtsh"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:staging.exemplo.com.br",
+        "relacao": "subdominio_de",
+        "confianca": 0.8,
+        "fonte": "crtsh"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "dominio:vpn.exemplo.com.br",
+        "relacao": "subdominio_de",
+        "confianca": 0.8,
+        "fonte": "crtsh"
+      },
+      {
+        "de": "dominio:exemplo.com.br",
+        "para": "ip:203.0.113.10",
+        "relacao": "visto_no_urlscan",
+        "confianca": 0.5,
+        "fonte": "urlscan"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "organizacao:empresa exemplo ltda",
+        "relacao": "razao_social",
+        "confianca": 0.9,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "cep:01001-000",
+        "relacao": "endereco_da_empresa",
+        "confianca": 0.7,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "email:contato@exemplo.com.br",
+        "relacao": "email_cadastral",
+        "confianca": 0.8,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "telefone:1130000000",
+        "relacao": "telefone_cadastral",
+        "confianca": 0.6,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "pessoa:fulana de tal exemplo",
+        "relacao": "socio_de",
+        "confianca": 0.9,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "cnpj:11.222.333/0001-81",
+        "para": "pessoa:beltrano exemplo",
+        "relacao": "socio_de",
+        "confianca": 0.9,
+        "fonte": "brasilapi_cnpj"
+      },
+      {
+        "de": "ip:203.0.113.10",
+        "para": "dominio:exemplo.com.br",
+        "relacao": "hospedado_em",
+        "confianca": 0.7,
+        "fonte": "internetdb"
+      },
+      {
+        "de": "ip:203.0.113.10",
+        "para": "asn:as64500",
+        "relacao": "anunciado_por",
+        "confianca": 0.9,
+        "fonte": "ripestat_ip"
+      },
+      {
+        "de": "email:contato@exemplo.com.br",
+        "para": "dominio:exemplo.com.br",
+        "relacao": "dominio_do_email",
+        "confianca": 1.0,
+        "fonte": "email_local"
+      },
+      {
+        "de": "email:contato@exemplo.com.br",
+        "para": "username:contato",
+        "relacao": "parte_local_do_email",
+        "confianca": 0.5,
+        "fonte": "email_local"
+      }
+    ]
+  }
+}

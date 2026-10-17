@@ -1,47 +1,40 @@
-# ⛏️ COMECE AQUI — GARIMPO
+# ⛏️ COMECE AQUI — GARIMPO 2.0
 
 **Uma ação por vez. Siga na ordem.**
 
 ## ✅ Ação 1 — Confira o Python (30 segundos)
 
-Abra um terminal e digite:
-
 ```bash
 python3 --version
 ```
 
-Apareceu `Python 3.9` ou maior? **Pronto, você já tem tudo** — o GARIMPO não instala nada (zero dependências).
-No Windows, se `python3` falhar, tente `python --version`.
+Apareceu `Python 3.9` ou maior? **Pronto** — o GARIMPO não instala nada. (Windows: tente `python --version`.)
 
-## ✅ Ação 2 — Rode a demonstração offline (10 segundos)
+## ✅ Ação 2 — Abra o painel (dois cliques)
 
-```bash
-python3 garimpo.py demo
-```
+Na pasta `lancadores/`, dois cliques em:
 
-Abra o arquivo `casos/demo/dossie.html` no navegador. É assim que todo dossiê fica.
-*(Ou dois cliques no lançador da pasta `lancadores/`: `GARIMPO-Demo-Windows.bat`, `GARIMPO-Demo-macOS.command` ou `garimpo-demo.sh` no Linux.)*
+- Windows: `GARIMPO-Painel-Windows.bat`
+- macOS: `GARIMPO-Painel-macOS.command` (na 1ª vez: botão direito → Abrir)
+- Linux: `garimpo-painel.sh`
 
-## ✅ Ação 3 — Primeira investigação real (2 minutos)
+O navegador abre em `http://127.0.0.1:8765`. *(Terminal: `python3 garimpo.py painel`.)*
 
-```bash
-python3 garimpo.py investigar exemplo.com.br
-```
+## ✅ Ação 3 — Clique em "Abrir a demonstração"
 
-Troque `exemplo.com.br` por um domínio, IP, e-mail, username, CNPJ, telefone ou URL **que você tem autorização para investigar**. A ferramenta detecta o tipo sozinha.
+Duas coletas fictícias de `exemplo.com.br` com uma semana de diferença. Repare no quadro **Mudanças** (subdomínio novo, porta nova, sócio novo), arraste os nós do grafo e clique num `#n` para ver a evidência bruta.
 
-## ✅ Ação 4 — Verifique a cadeia de custódia (10 segundos)
+## ✅ Ação 4 — Sua primeira investigação real
 
-```bash
-python3 garimpo.py verificar casos/<seu-caso>
-```
+No painel, digite um alvo **que você tem autorização para investigar** e clique em **Garimpar**.
+*(Terminal: `python3 garimpo.py investigar exemplo.com.br`.)*
 
-Deve aparecer: `✔ Cadeia de custódia ÍNTEGRA`.
+## ✅ Ação 5 — Verifique e entregue
 
-## 📖 Quer entender tudo?
-
-Abra **`manual/manual.html`** no navegador: instalação por sistema operacional, a figura interativa da "bancada", diagramas de como funciona, uso guiado, solução de problemas e glossário.
+No painel: **Verificar custódia** → deve aparecer `✔ custódia ÍNTEGRA`. Para entregar, envie a pasta do caso inteira (fica em `casos/`).
 
 ---
 
-> ⚖️ **Uso legal e autorizado apenas.** O GARIMPO é passivo (nunca toca a infraestrutura do alvo), mas passivo não é anônimo: cada fonte consultada vê o que você pesquisou. Rode `python3 garimpo.py fontes` para ver a tabela de ruído completa.
+**Depois, quando quiser:** monitorar um alvo toda semana (`monitorar`), exportar para MISP/OpenCTI/Gephi/Maltego (`exportar`), ou plugar no Claude (`mcp`). Tudo explicado em **`manual/manual.html`**.
+
+> ⚖️ **Uso legal e autorizado apenas.** O GARIMPO é sempre passivo (nunca toca a infraestrutura do alvo), mas passivo não é anônimo: cada fonte vê o que você pesquisou. `python3 garimpo.py fontes` mostra a tabela de ruído.

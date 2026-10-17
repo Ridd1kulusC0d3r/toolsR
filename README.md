@@ -1,96 +1,112 @@
-# ⛏️ GARIMPO
+# ⛏️ GARIMPO 2.0
 
-> **Motor de pivô OSINT passivo · 100% Python stdlib · keyless · com cadeia de custódia forense**
+> **Motor de pivô OSINT passivo · 100% Python stdlib · keyless · cadeia de custódia forense · painel web · servidor MCP · STIX 2.1 · monitoramento**
 > Família **DEIVOSINT** · irmão do [Mineiro](https://github.com/Ridd1kulusC0d3r/Mineiro-OSINT-Extractor): o Mineiro extrai, o GARIMPO garimpa os vínculos.
 
 ```bash
-python3 garimpo.py investigar alvo.com.br
+python3 garimpo.py painel                    # painel no navegador (o jeito mais fácil)
+python3 garimpo.py investigar alvo.com.br    # ou direto no terminal
 ```
 
-Sem `pip install`. Sem API key. Sem LLM. Um arquivo.
+Sem `pip install`. Sem API key. Sem LLM. Python 3.9+.
 
 ## O que ele faz
 
-Você entrega **um seed** (domínio, IP, e-mail, username, CNPJ, CPF, telefone — inclusive `(31) 99999-8888` —, URL ou hash; ele detecta sozinho) e o GARIMPO:
+Você entrega **um seed** — domínio, IP, e-mail, username, CNPJ, CEP, ASN, URL, hash, telefone (`(31) 99999-8888`) ou CPF — e o GARIMPO:
 
-1. **Detecta o tipo** da entidade — incluindo CPF e CNPJ com validação de dígitos verificadores offline (formato de CPF/CNPJ com DV errado vira `documento_invalido` e não é consultado);
-2. **Consulta só fontes passivas e keyless** — nenhuma requisição toca a infraestrutura do alvo;
-3. **Pivota em BFS com orçamento** — cada descoberta de alta confiança vira novo nó, até os tetos de profundidade, entidades e requisições;
-4. **Hasheia e encadeia cada evidência bruta** (SHA-256 em ledger hash-encadeado) — adulterou um byte, quebrou a corrente;
-5. **Gera um dossiê HTML standalone em pt-BR** com grafo SVG de vínculos e fato-a-fato com fonte.
+1. **detecta o tipo** (CPF/CNPJ com dígito verificador offline; formato de CPF/CNPJ com DV errado vira `documento_invalido` e nunca é consultado);
+2. **consulta 28 fontes passivas e keyless** em paralelo, com cortesia por site e cache — nenhuma requisição toca a infraestrutura do alvo;
+3. **pivota em BFS com orçamento** (profundidade, entidades, requisições) e mostra a **fronteira**: o que foi achado mas ainda não consultado;
+4. **lacra cada resposta bruta** num ledger SHA-256 hash-encadeado e **amarra cada fato à evidência** que o sustenta (`#seq`);
+5. entrega **dossiê HTML pt-BR**, **exportações** (STIX 2.1, GraphML, CSV, JSON) e, se você repetir a coleta, **o que mudou**.
 
-## Fontes (todas sem chave)
+### O pulo do gato brasileiro
 
-| Fonte | Entidade | Nível | O que é enviado, e para onde |
-|---|---|---|---|
-| RDAP (registro.br p/ `.br`, rdap.org p/ o resto) | domínio, IP | passiva | 1 requisição ao servidor do registro — nunca ao alvo |
-| DNS over HTTPS (dns.google) | domínio, e-mail, IP | passiva* | consulta via resolvedor do Google; os nameservers do alvo veem o resolvedor, não você |
-| crt.sh | domínio | passiva | lê o índice público de transparência de certificados (subdomínios) |
-| InternetDB (Shodan keyless) | IP | passiva | lê o índice **existente** da Shodan — não dispara scan novo |
-| Internet Archive / Wayback CDX | domínio, URL | passiva | lê o índice do Archive |
-| GitHub API | username | passiva | 1–2 requisições públicas (60/h sem token) |
-| Gravatar | e-mail | passiva | 1 requisição com o hash MD5 do e-mail |
-| **BrasilAPI (CNPJ/Receita)** | CNPJ | passiva | dados públicos da Receita Federal: razão social, QSA, CNAE |
-| Cálculo local | CPF, hash, telefone | **offline** | nenhum byte sai da máquina |
+`domínio .br` → **RDAP do registro.br publica o CNPJ do titular** → BrasilAPI (Receita) → **razão social, sócios (QSA), e-mail e telefone cadastrais, CEP** → logradouro e coordenadas. Tudo keyless.
 
-**Passivo ≠ anônimo.** Cada serviço consultado vê o que você pesquisou (e seu IP). `python3 garimpo.py fontes` imprime esta tabela.
+## As quatro portas de entrada
 
-**Decisão ética explícita:** CPF recebe **apenas** validação matemática offline. Pivotar CPF contra bases vazadas está fora do escopo de uma ferramenta passiva e legal.
+| Porta | Comando | Para quem |
+|---|---|---|
+| **Painel web** | `python3 garimpo.py painel` | quem não quer terminal: investigar, explorar o grafo arrastando nós, abrir evidências, exportar, comparar |
+| **CLI** | `python3 garimpo.py investigar ALVO` | scripts, automação, servidores |
+| **Servidor MCP** | `python3 garimpo.py mcp` | Claude Desktop, Claude Code e outros clientes MCP |
+| **Demo** | `python3 garimpo.py demo` | conhecer tudo em 10 s, offline (duas coletas fictícias + diff) |
 
 ## Comandos
 
 ```bash
-python3 garimpo.py investigar ALVO [--profundidade 1] [--max-entidades 12] [--max-requisicoes 30]
-python3 garimpo.py detectar VALOR        # só mostra o tipo detectado
-python3 garimpo.py fontes                # tabela de ruído
-python3 garimpo.py verificar CASO_DIR    # reverifica a cadeia de custódia
-python3 garimpo.py demo                  # caso de demonstração 100% offline
-python3 -m unittest discover -s testes -v   # roda a suíte de testes (21, offline)
+python3 garimpo.py investigar ALVO [--profundidade 1] [--max-entidades 12] [--max-requisicoes 40] [--paralelo 4] [--exportar stix,graphml,csv]
+python3 garimpo.py monitorar ALVO --contra casos/CASO_ANTERIOR     # coleta de novo e mostra o que mudou
+python3 garimpo.py diff CASO_ANTES CASO_DEPOIS [--json]
+python3 garimpo.py exportar CASO stix graphml csv json
+python3 garimpo.py painel [--porta 8765] [--casos casos]
+python3 garimpo.py mcp [--casos casos]
+python3 garimpo.py fontes | detectar VALOR | verificar CASO | demo | versao
+python3 -m unittest discover -s testes -v                          # 48 testes, offline
 ```
 
-Cada caso vira um diretório:
+## Fontes (todas keyless, todas passivas)
+
+| Tipo | Fontes |
+|---|---|
+| domínio | RDAP (**registro.br** para `.br`, com CNPJ do titular), DNS completo via DoH (A/AAAA/MX/NS/TXT/SOA/CAA/DMARC, SPF), crt.sh, Certspotter, Wayback CDX, urlscan.io (só lê varreduras existentes) |
+| IP / ASN | RDAP, InternetDB (Shodan keyless, sem scan novo), PTR, RIPEstat (prefixo e ASN de origem; titular e prefixos do ASN), lista oficial de saídas Tor |
+| e-mail | domínio + parte local, Gravatar, **keys.openpgp.org** (parser OpenPGP próprio: UIDs da chave → outros e-mails e nomes) |
+| username | GitHub (perfil + **e-mails de commits públicos**), **Keybase** (contas e domínios provados criptograficamente), Hacker News |
+| Brasil | **BrasilAPI CNPJ** (QSA, CNAE, Simples/MEI, endereço, contatos), **BrasilAPI CEP**, CPF **só offline**, telefone **só offline** (DDD → UF) |
+| artefatos | URL → host + Wayback; hash → **CIRCL hashlookup** (software conhecido) |
+
+`python3 garimpo.py fontes` imprime a tabela de ruído completa — **gerada do código**: cada fonte declara nível e destino real dos bytes. **Passivo ≠ anônimo**: cada serviço vê o que você pesquisou.
+
+**Decisões éticas no código:** CPF nunca é consultado, pivotado nem exportado; o CPF de titular de domínio `.br` é descartado na coleta.
+
+## Usar com o Claude (MCP)
+
+```json
+{"mcpServers": {"garimpo": {"command": "python3",
+  "args": ["/caminho/para/toolsR/garimpo.py", "mcp", "--casos", "/caminho/para/toolsR/casos"]}}}
+```
+
+Claude Code: `claude mcp add garimpo -- python3 /caminho/para/toolsR/garimpo.py mcp --casos /caminho/para/toolsR/casos`
+
+Ferramentas: `garimpo_investigar`, `garimpo_caso`, `garimpo_comparar`, `garimpo_verificar`, `garimpo_exportar`, `garimpo_casos`, `garimpo_detectar`, `garimpo_fontes`. Casos só dentro de `--casos`; teto de 200 requisições por chamada.
+
+## Um caso por pasta
 
 ```
-casos/2026-10-15_020830_alvo/
-├── caso.json          # grafo completo, legível por máquina
-├── dossie.html        # dossiê standalone (abre offline, pt-BR)
-├── ledger.jsonl       # cadeia de custódia hash-encadeada
-└── evidencias/        # resposta bruta de cada requisição, byte a byte
+casos/2026-10-17_090000_alvo/
+├── caso.json        # grafo: fato → fonte → evidência #seq; fronteira; vínculos
+├── dossie.html      # dossiê standalone (offline, pt-BR)
+├── ledger.jsonl     # cadeia de custódia hash-encadeada
+├── evidencias/      # resposta bruta de cada requisição
+├── diff.json        # (monitorar) o que mudou
+└── exportacoes/     # (exportar) STIX 2.1, GraphML, CSV, JSON
 ```
-
-## Por que ele existe (engenharia reversa do OpenOSINT)
-
-O GARIMPO nasceu da dissecação completa do [OpenOSINT](https://github.com/OpenOSINT/OpenOSINT) (~22 mil linhas, 100 módulos). O estudo inteiro está em [`docs/ENGENHARIA-REVERSA-OPENOSINT.md`](docs/ENGENHARIA-REVERSA-OPENOSINT.md). Resumo do que foi **mantido** e do que foi **corrigido**:
-
-| | OpenOSINT | GARIMPO |
-|---|---|---|
-| Passivo por padrão, tabela de ruído honesta | ✅ ótimo | ✅ mantido (e sempre passivo) |
-| Orçamento de chamadas não negociável | ✅ ótimo | ✅ mantido |
-| Fluxo principal | exige LLM + chave Anthropic | **determinístico, zero IA** |
-| Dependências | ~20 obrigatórias | **0 — stdlib pura** |
-| Fontes brasileiras | nenhuma | **registro.br RDAP, BrasilAPI/CNPJ, CPF/CNPJ offline** |
-| Extração para pivô | regex sobre texto livre | **JSON estruturado por fonte** |
-| Proveniência | sidecar por statement | **+ cadeia de custódia SHA-256 encadeada e verificável** |
-| InternetDB, crt.sh, Wayback | ausentes | **nativos e keyless** |
-| Relatório | PDF/HTML EN/IT | **dossiê HTML standalone pt-BR** |
 
 ## Estrutura do repositório
 
 ```
-garimpo.py                      # a ferramenta inteira (1 arquivo, stdlib)
-COMECE-AQUI.md                  # comece por aqui (uma ação por vez)
-manual/manual.html              # manual ilustrado para usuários leigos
-manual/figura/                  # figura isométrica interativa (a "bancada"), temas escuro e claro
-lancadores/                     # dois cliques: .bat (Windows), .command (macOS), .sh (Linux)
-demo/                           # caso de demonstração
-testes/test_garimpo.py          # suíte automatizada: 21 testes, unittest, offline
-testes/RELATORIO-DE-TESTES.md   # resultado dos testes em nuvem
+garimpo.py                 # porta de entrada (CLI) — re-exporta a API
+jazida/                    # o núcleo (a jazida do garimpo), stdlib pura
+  deteccao.py custodia.py rede.py motor.py dossie.py exportar.py monitor.py demo.py
+  mcp.py painel.py painel.html cli.py
+  fontes/                  # plugins: dominio, ip, pessoais, brasil, artefatos
+COMECE-AQUI.md             # uma ação por vez
+manual/manual.html         # manual ilustrado (+ figura isométrica e capturas anotadas)
+lancadores/                # dois cliques: Painel / Demo / Investigar × Windows, macOS, Linux
+demo/                      # as duas coletas de demonstração (com diff)
+testes/                    # 48 testes + relatório
 docs/ENGENHARIA-REVERSA-OPENOSINT.md
 ```
 
+## Origem
+
+Nasceu da engenharia reversa do [OpenOSINT](https://github.com/OpenOSINT/OpenOSINT). A 1.x corrigiu as lacunas do núcleo (Brasil, dependências, LLM obrigatório, extração frágil, proveniência sem forense). A 2.0 alcança o que o OpenOSINT tinha e o GARIMPO não — **servidor MCP, interface web, fan-out paralelo** — sem abrir mão de stdlib pura, e vai além (custódia por fato, STIX, diff, fontes BR). Detalhes em [`docs/ENGENHARIA-REVERSA-OPENOSINT.md`](docs/ENGENHARIA-REVERSA-OPENOSINT.md).
+
 ## Licença e aviso legal
 
-MIT. **Uso legal e autorizado apenas.** Os fatos do dossiê vêm de execuções reais das fontes listadas — são pistas a confirmar, não prova. Você é o único responsável pelo uso.
+MIT. **Uso legal e autorizado apenas.** Fatos vêm de execuções reais das fontes listadas — são pistas a confirmar, não prova.
 
 ---
 

@@ -1,0 +1,87 @@
+{
+  "antes": {
+    "seed": "exemplo.com.br",
+    "iniciado_utc": "2026-10-01T09:00:00+00:00"
+  },
+  "depois": {
+    "seed": "exemplo.com.br",
+    "iniciado_utc": "2026-10-08T09:00:00+00:00"
+  },
+  "entidades_novas": [
+    "dominio:staging.exemplo.com.br",
+    "pessoa:beltrano exemplo"
+  ],
+  "entidades_sumidas": [],
+  "fatos_novos": {
+    "cnpj:11.222.333/0001-81": [
+      [
+        "brasilapi_cnpj",
+        "sócio (Sócio): BELTRANO EXEMPLO"
+      ]
+    ],
+    "dominio:exemplo.com.br": [
+      [
+        "certspotter",
+        "emissões de certificado vistas: 1 · subdomínios únicos: 3"
+      ],
+      [
+        "certspotter",
+        "subdomínio (Certspotter): staging.exemplo.com.br"
+      ],
+      [
+        "crtsh",
+        "subdomínio (CT): staging.exemplo.com.br"
+      ],
+      [
+        "crtsh",
+        "subdomínios únicos em CT (crt.sh): 3"
+      ],
+      [
+        "wayback",
+        "último snapshot no Internet Archive: 2026-10-07"
+      ]
+    ],
+    "ip:203.0.113.10": [
+      [
+        "internetdb",
+        "portas vistas pela Shodan: [443, 8443]"
+      ]
+    ]
+  },
+  "fatos_sumidos": {
+    "dominio:exemplo.com.br": [
+      [
+        "certspotter",
+        "emissões de certificado vistas: 1 · subdomínios únicos: 2"
+      ],
+      [
+        "crtsh",
+        "subdomínios únicos em CT (crt.sh): 2"
+      ],
+      [
+        "wayback",
+        "último snapshot no Internet Archive: 2026-09-30"
+      ]
+    ],
+    "ip:203.0.113.10": [
+      [
+        "internetdb",
+        "portas vistas pela Shodan: [443]"
+      ]
+    ]
+  },
+  "vinculos_novos": [
+    [
+      "cnpj:11.222.333/0001-81",
+      "pessoa:beltrano exemplo",
+      "socio_de"
+    ],
+    [
+      "dominio:exemplo.com.br",
+      "dominio:staging.exemplo.com.br",
+      "subdominio_de"
+    ]
+  ],
+  "vinculos_sumidos": [],
+  "total_mudancas": 15
+}

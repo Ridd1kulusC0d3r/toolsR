@@ -67,6 +67,10 @@ dt{font-weight:700;color:#fff;margin-top:12px}
 dd{margin:2px 0 0 0;color:var(--mudo)}
 .svgbox{background:#0a0f1c;border:1px solid var(--borda);border-radius:12px;padding:10px;margin:14px 0}
 figcaption{color:var(--mudo);font-size:.82rem;margin-top:6px;text-align:center}
+.anot{position:relative;margin:14px 0;border:1px solid var(--borda);border-radius:12px;overflow:hidden}
+.anot img{display:block;width:100%;height:auto}
+.anot .mark{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;font-size:.82rem;box-shadow:0 0 0 3px rgba(0,0,0,.55)}
+.novo{display:inline-block;background:#10b981;color:#04130d;border-radius:999px;padding:1px 8px;font-size:.66rem;font-weight:800;vertical-align:2px;margin-left:6px}
 footer{color:#475569;font-size:.8rem;margin-top:50px;border-top:1px solid var(--borda);padding-top:14px}
 kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1px 7px;font-size:.82rem}
 </style>
@@ -74,14 +78,14 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <body>
 <nav><div class="wrap2">
 <a href="#oque">O que é</a><a href="#instalacao">Instalação</a><a href="#funciona">Como funciona</a>
-<a href="#uso">Uso guiado</a><a href="#relatorios">Relatórios</a><a href="#custodia">Custódia</a>
+<a href="#uso">Uso guiado</a><a href="#painel">Painel</a><a href="#relatorios">Relatórios</a><a href="#monitorar">Monitorar</a><a href="#exportar">Exportar</a><a href="#mcp">MCP</a><a href="#custodia">Custódia</a><a href="#fontes">Fontes</a>
 <a href="#problemas">Problemas</a><a href="#glossario">Glossário</a><a href="#tecnica">Seção técnica</a>
 </div></nav>
 <div class="wrap">
 
 <header>
 <h1>⛏️ GARIMPO <small>· manual ilustrado · família DEIVOSINT</small></h1>
-<p class="sub">Motor de pivô OSINT passivo · 100% Python padrão · sem chaves de API · com cadeia de custódia forense · dossiê em português</p>
+<p class="sub">Versão 2.0.0 · motor de pivô OSINT passivo · 100% Python padrão · sem chaves de API · 28 fontes · painel web · servidor MCP · STIX 2.1 · monitoramento · cadeia de custódia forense · dossiê em português</p>
 </header>
 
 <!-- ==================== O QUE É ==================== -->
@@ -95,6 +99,14 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <li><b>Guarda cada resposta bruta com lacre digital</b> (hash SHA-256 encadeado) — se alguém alterar um byte depois, o lacre denuncia;</li>
 <li><b>Entrega um dossiê em HTML</b>, em português, que abre em qualquer navegador, sem internet.</li>
 </ol>
+<p><b>Novo na 2.0:</b></p>
+<ul>
+<li><b>Painel no navegador</b> — investigue, explore o grafo arrastando os nós e abra cada evidência, sem terminal; <span class="novo">NOVO</span></li>
+<li><b>Monitoramento</b> — repita a coleta e veja o que mudou no alvo (subdomínio novo, porta nova, sócio que entrou); <span class="novo">NOVO</span></li>
+<li><b>Exportações</b> — STIX 2.1 (para MISP/OpenCTI), GraphML (Gephi) e CSV (Maltego/planilha); <span class="novo">NOVO</span></li>
+<li><b>Servidor MCP</b> — o Claude (e outros assistentes) passam a usar o GARIMPO como ferramenta; <span class="novo">NOVO</span></li>
+<li><b>28 fontes</b>, incluindo o pulo do gato brasileiro: domínio <code>.br</code> → CNPJ do titular (RDAP do registro.br) → sócios → endereço. <span class="novo">NOVO</span></li>
+</ul>
 <p>Tudo isso <b>sem instalar nada</b> além do Python que provavelmente já está no seu computador, e <b>sem nenhuma chave de API</b>.</p>
 </div>
 <div class="aviso">⚖️ <b>Uso legal e autorizado apenas.</b> "Passivo" significa que o alvo não recebe requisições suas — mas cada serviço público consultado (Google DNS, crt.sh, Shodan, BrasilAPI…) vê o que você pesquisou. Passivo não é anônimo.</div>
@@ -117,7 +129,7 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <div class="passo"><div class="num">3</div><div>Se não tiver Python: baixe em <code>python.org/downloads</code>, execute o instalador e <b>marque a caixa "Add Python to PATH"</b> antes de clicar em Install.</div></div>
 <div class="passo"><div class="num">4</div><div>Baixe/extraia a pasta do GARIMPO (ex.: <code>C:\GARIMPO</code>).</div></div>
 <div class="passo"><div class="num">5</div><div>Dê <b>dois cliques</b> em <code>lancadores\GARIMPO-Demo-Windows.bat</code>. O dossiê de demonstração abre no navegador. Pronto. ✔</div></div>
-<div class="ok">Para investigar de verdade: dois cliques em <code>GARIMPO-Investigar-Windows.bat</code>, digite o alvo e <kbd>Enter</kbd>.</div>
+<div class="ok">Para investigar de verdade, o jeito mais fácil: dois cliques em <code>GARIMPO-Painel-Windows.bat</code> — o painel abre no navegador. (Pelo terminal: <code>GARIMPO-Investigar-Windows.bat</code>.)</div>
 </div>
 
 <div class="painel lin">
@@ -125,6 +137,7 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <div class="passo"><div class="num">2</div><div>Digite <code>python3 --version</code>. Qualquer 3.9+ serve. (Faltando: <code>sudo apt install python3</code> ou equivalente da sua distro.)</div></div>
 <div class="passo"><div class="num">3</div><div>Entre na pasta do GARIMPO: <code>cd caminho/para/garimpo</code>.</div></div>
 <div class="passo"><div class="num">4</div><div>Rode a demonstração: <code>./lancadores/garimpo-demo.sh</code> (ou <code>python3 garimpo.py demo</code>). O dossiê abre no navegador. ✔</div></div>
+<div class="ok">Para o painel: <code>./lancadores/garimpo-painel.sh</code> (ou <code>python3 garimpo.py painel</code>).</div>
 </div>
 
 <div class="painel mac">
@@ -133,7 +146,7 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <div class="passo"><div class="num">3</div><div>No Finder, abra a pasta <code>lancadores</code> do GARIMPO.</div></div>
 <div class="passo"><div class="num">4</div><div>Dê <b>dois cliques</b> em <code>GARIMPO-Demo-macOS.command</code>. O dossiê abre no Safari/Chrome. ✔</div></div>
 <div class="aviso">Na primeira vez o macOS pode dizer "desenvolvedor não identificado": clique com o <b>botão direito → Abrir → Abrir</b>. Só uma vez. Se ainda assim não abrir: no Terminal, <code>chmod +x lancadores/*.command</code>.</div>
-<div class="ok">Para investigar de verdade: dois cliques em <code>GARIMPO-Investigar-macOS.command</code>, digite o alvo e <kbd>Enter</kbd> — o dossiê abre sozinho no fim.</div>
+<div class="ok">Para investigar de verdade, o jeito mais fácil: dois cliques em <code>GARIMPO-Painel-macOS.command</code> — o painel abre no navegador. (Pelo terminal: <code>GARIMPO-Investigar-macOS.command</code>.)</div>
 </div>
 </div>
 
@@ -146,6 +159,47 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <iframe src="figura/garimpo-figura.html" title="Bancada GARIMPO — figura interativa" loading="lazy" style="width:100%;aspect-ratio:7/6;border:0;border-radius:12px;background:#111"></iframe>
 <p style="font-size:.84rem;color:var(--mudo)">Não carregou? Abra direto: <code>manual/figura/garimpo-figura.html</code> (tema claro: <code>garimpo-figura-light.html</code>).</p>
 </div>
+
+<h3>Arquitetura 2.0 — os módulos da <code>jazida/</code></h3>
+<figure class="svgbox">
+<svg viewBox="0 0 920 330" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+<g font-family="system-ui" font-size="12">
+<g fill="#16233f" stroke="#3b82f6" stroke-width="1.6">
+<rect x="20" y="20" width="160" height="44" rx="10"/><rect x="20" y="80" width="160" height="44" rx="10"/>
+<rect x="20" y="140" width="160" height="44" rx="10"/><rect x="20" y="200" width="160" height="44" rx="10"/></g>
+<g fill="#fff" text-anchor="middle" font-weight="700">
+<text x="100" y="47">garimpo.py (CLI)</text><text x="100" y="107">painel (navegador)</text>
+<text x="100" y="167">mcp (Claude e cia.)</text><text x="100" y="227">demo (offline)</text></g>
+<g stroke="#64748b" stroke-width="1.6" fill="none" marker-end="url(#seta)">
+<path d="M180 42 C 230 42, 230 132, 262 132"/><path d="M180 102 C 220 102, 230 132, 262 132"/>
+<path d="M180 162 C 220 162, 230 132, 262 132"/><path d="M180 222 C 230 222, 230 132, 262 132"/></g>
+<rect x="264" y="92" width="170" height="80" rx="12" fill="#1e1b4b" stroke="#8b5cf6" stroke-width="2"/>
+<text x="349" y="122" fill="#fff" text-anchor="middle" font-weight="700">motor</text>
+<text x="349" y="142" fill="#94a3b8" text-anchor="middle" font-size="11">BFS paralelo · fronteira</text>
+<text x="349" y="158" fill="#94a3b8" text-anchor="middle" font-size="11">deteccao · orçamento</text>
+<line x1="434" y1="132" x2="482" y2="132" stroke="#64748b" stroke-width="1.6" marker-end="url(#seta)"/>
+<rect x="484" y="40" width="190" height="184" rx="12" fill="#042f2e" stroke="#10b981" stroke-width="2"/>
+<text x="579" y="66" fill="#fff" text-anchor="middle" font-weight="700">fontes/ (plugins)</text>
+<g fill="#94a3b8" text-anchor="middle" font-size="11">
+<text x="579" y="90">dominio · ip · pessoais</text><text x="579" y="108">brasil · artefatos</text>
+<text x="579" y="132">cada uma declara nível</text><text x="579" y="148">de ruído e destino real</text>
+<text x="579" y="172">28 fontes registradas</text></g>
+<text x="579" y="204" fill="#6ee7b7" text-anchor="middle" font-size="11">rede: cache · cortesia · rastreio</text>
+<line x1="674" y1="132" x2="722" y2="132" stroke="#64748b" stroke-width="1.6" marker-end="url(#seta)"/>
+<rect x="724" y="40" width="176" height="80" rx="12" fill="#1c1917" stroke="#f59e0b" stroke-width="2"/>
+<text x="812" y="70" fill="#fff" text-anchor="middle" font-weight="700">custodia 🔒</text>
+<text x="812" y="92" fill="#94a3b8" text-anchor="middle" font-size="11">evidência bruta + ledger</text>
+<text x="812" y="108" fill="#94a3b8" text-anchor="middle" font-size="11">SHA-256 encadeado</text>
+<rect x="724" y="144" width="176" height="80" rx="12" fill="#111a2e" stroke="#3b82f6" stroke-width="2"/>
+<text x="812" y="172" fill="#fff" text-anchor="middle" font-weight="700">caso.json</text>
+<text x="812" y="194" fill="#94a3b8" text-anchor="middle" font-size="11">fato → fonte → evidência #n</text>
+<line x1="812" y1="224" x2="812" y2="252" stroke="#64748b" stroke-width="1.6" marker-end="url(#seta)"/>
+<g fill="#111a2e" stroke="#1e293b"><rect x="484" y="256" width="130" height="50" rx="10"/><rect x="626" y="256" width="130" height="50" rx="10"/><rect x="768" y="256" width="132" height="50" rx="10"/></g>
+<g fill="#fff" text-anchor="middle" font-weight="700"><text x="549" y="286">dossie (HTML)</text><text x="691" y="286">monitor (diff)</text><text x="834" y="286">exportar</text></g>
+<text x="834" y="320" fill="#94a3b8" text-anchor="middle" font-size="10">STIX 2.1 · GraphML · CSV · JSON</text>
+</g></svg>
+<figcaption>Fig. 1b — Arquitetura 2.0: quatro portas de entrada, um motor, fontes como plugins, e tudo amarrado à custódia.</figcaption>
+</figure>
 
 <h3>A jornada de uma investigação</h3>
 <figure class="svgbox">
@@ -306,6 +360,8 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <text x="475" y="135" text-anchor="middle">vínculo fraco</text>
 <circle cx="640" cy="105" r="20" fill="#3b82f6"/><circle cx="688" cy="105" r="12" fill="#3b82f6"/>
 <text x="664" y="140" text-anchor="middle">maior = seed</text>
+<circle cx="780" cy="105" r="14" fill="#14b8a6"/><text x="780" y="135" text-anchor="middle">ASN</text>
+<circle cx="860" cy="105" r="14" fill="#a3e635"/><text x="860" y="135" text-anchor="middle">CEP</text>
 </g>
 </svg>
 </div>
@@ -319,19 +375,21 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <p>É isso. Tudo abaixo é o que você vai <b>ver</b> acontecer:</p>
 <div class="term">
 <div class="barra"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i>&nbsp;Terminal — captura anotada</div>
-<pre><code>⛏️  GARIMPO 1.1.0 · seed: exemplo.com.br (detectado: dominio)   <span class="mark">1</span>
-    caso: casos/2026-10-15_090000_exemplo.com.br · modo: PASSIVO <span class="mark">2</span>
+<pre><code>⛏️  GARIMPO 2.0.0 · seed: exemplo.com.br (detectado: dominio)   <span class="mark">1</span>
+    caso: casos/2026-10-17_090000_exemplo.com.br · modo: PASSIVO <span class="mark">2</span>
 
 [0] DOMINIO → exemplo.com.br                                    <span class="mark">3</span>
-  → [rdap_registro_br] https://rdap.registro.br/domain/...      <span class="mark">4</span>
-    [rdap] evento registration: 2019-03-04
+  → [rdap_dominio] https://rdap.registro.br/domain/...          <span class="mark">4</span>
+    [rdap_dominio] titular (registrant) com CNPJ 11.222.333/0001-81
     [dns] A: 203.0.113.10
     [crtsh] subdomínio (CT): app.exemplo.com.br
 
-[1] IP → 203.0.113.10                                           <span class="mark">5</span>
-    [internetdb] portas vistas pela Shodan: [443]
+[1] CNPJ → 11.222.333/0001-81                                   <span class="mark">5</span>
+    [brasilapi_cnpj] sócio (Sócio-Administrador): FULANA DE TAL EXEMPLO
+[1] IP → 203.0.113.10
+    [ripestat_ip] origem BGP: AS64500 — EXEMPLO-AS
 
-✔ 3 entidades · 2 vínculos · 9 requisições · 4.2s               <span class="mark">6</span>
+✔ 8 entidades consultadas · 4 na fronteira · 17 vínculos · 38 requisições · 6.1s   <span class="mark">6</span>
 ✔ Dossiê: casos/.../dossie.html
 ✔ Custódia: casos/.../ledger.jsonl</code></pre>
 </div>
@@ -339,8 +397,8 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <div class="legmark"><span class="mark">2</span><span>Cada investigação cria sua própria pasta de caso, com data e hora.</span></div>
 <div class="legmark"><span class="mark">3</span><span><code>[0]</code> é a profundidade: 0 = o seed que você digitou.</span></div>
 <div class="legmark"><span class="mark">4</span><span>Cada seta <code>→</code> é uma requisição real; a linha diz a fonte e a URL exata.</span></div>
-<div class="legmark"><span class="mark">5</span><span>O pivô em ação: o IP descoberto no DNS virou novo alvo na profundidade 1.</span></div>
-<div class="legmark"><span class="mark">6</span><span>Resumo final: entidades, vínculos, requisições gastas do orçamento e duração.</span></div>
+<div class="legmark"><span class="mark">5</span><span>O pivô em ação: o CNPJ do titular (vindo do RDAP do registro.br) e o IP (vindo do DNS) viraram novos alvos na profundidade 1 — consultados em paralelo.</span></div>
+<div class="legmark"><span class="mark">6</span><span>Resumo: entidades consultadas, <b>fronteira</b> (achadas mas não consultadas — bons próximos alvos), vínculos, requisições gastas e duração.</span></div>
 </div>
 
 <div class="card">
@@ -349,8 +407,10 @@ PIVÔ: descoberta confiável vira novo alvo (até o limite)</text>
 <table>
 <tr><th>Opção</th><th>Padrão</th><th>O que controla</th></tr>
 <tr><td><code>--profundidade</code></td><td>1</td><td>quantos saltos de pivô a partir do seed (2 já vai longe)</td></tr>
-<tr><td><code>--max-entidades</code></td><td>12</td><td>teto de nós no grafo</td></tr>
-<tr><td><code>--max-requisicoes</code></td><td>30</td><td>teto <b>duro</b> de requisições HTTP — nunca é ultrapassado</td></tr>
+<tr><td><code>--max-entidades</code></td><td>12</td><td>teto de entidades <b>consultadas</b> (a fronteira aparece no grafo, mas não gasta requisição)</td></tr>
+<tr><td><code>--max-requisicoes</code></td><td>40</td><td>teto <b>duro</b> de requisições HTTP — nunca é ultrapassado</td></tr>
+<tr><td><code>--paralelo</code></td><td>4</td><td>consultas simultâneas (cada site recebe no máximo ~3 por segundo)</td></tr>
+<tr><td><code>--exportar</code></td><td>—</td><td>exporta ao terminar: <code>--exportar stix,graphml,csv</code></td></tr>
 </table>
 </div>
 
@@ -363,25 +423,122 @@ python3 garimpo.py investigar torvalds               # username → GitHub públ
 python3 garimpo.py investigar 11.222.333/0001-81     # CNPJ → Receita (BrasilAPI): razão social, sócios
 python3 garimpo.py investigar "529.982.247-25"       # CPF → SÓ validação offline (decisão ética)
 python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapshot no Wayback
-python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo, só offline</code></pre>
+python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/UF/tipo, só offline
+python3 garimpo.py investigar 30130-110              # CEP → logradouro e coordenadas (BrasilAPI)
+python3 garimpo.py investigar AS28573                # ASN → titular e prefixos anunciados (RIPEstat)
+python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conhecido? (CIRCL hashlookup)</code></pre>
+</div>
+
+<!-- ==================== PAINEL ==================== -->
+<h2 id="painel">5 · Painel web (sem terminal) <span class="novo">NOVO</span></h2>
+<div class="card">
+<p><b>Ação única:</b> dois cliques em <code>GARIMPO-Painel-…</code> (ou <code>python3 garimpo.py painel</code>). O navegador abre em <code>http://127.0.0.1:8765</code>. Primeira vez? Clique em <b>Abrir a demonstração</b>.</p>
+<div class="anot">
+<img src="img/painel.png" alt="Painel do GARIMPO com o caso de demonstração aberto: formulário à esquerda, lista de casos, mudanças desde a coleta anterior, grafo interativo e fatos com evidências" loading="lazy">
+<span class="mark" style="left:11%;top:15.5%">1</span>
+<span class="mark" style="left:3.6%;top:34.8%">2</span>
+<span class="mark" style="left:21%;top:29.8%">3</span>
+<span class="mark" style="left:2.2%;top:55%">4</span>
+<span class="mark" style="left:73.5%;top:10.6%">5</span>
+<span class="mark" style="left:64%;top:14.4%">6</span>
+<span class="mark" style="left:73%;top:18.9%">7</span>
+<span class="mark" style="left:26.5%;top:50%">8</span>
+<span class="mark" style="left:97.6%;top:52.7%">9</span>
+</div>
+<div class="legmark"><span class="mark">1</span><span>Digite o alvo. Embaixo aparece o tipo detectado — confira antes de garimpar.</span></div>
+<div class="legmark"><span class="mark">2</span><span><b>Garimpar</b>: a investigação roda em segundo plano, com barra de progresso das requisições.</span></div>
+<div class="legmark"><span class="mark">3</span><span><b>Comparar com coleta anterior</b>: escolha um caso antigo do mesmo alvo e o novo já vem com o quadro de mudanças.</span></div>
+<div class="legmark"><span class="mark">4</span><span>Seus casos, do mais novo para o mais antigo. Clique para reabrir.</span></div>
+<div class="legmark"><span class="mark">5</span><span>Métricas do caso: consultadas, fronteira, vínculos, requisições gastas do orçamento.</span></div>
+<div class="legmark"><span class="mark">6</span><span>Ações: verificar a custódia, abrir o dossiê e exportar (STIX 2.1, GraphML, CSV, JSON).</span></div>
+<div class="legmark"><span class="mark">7</span><span><b>Mudanças</b> desde a coleta anterior: verde surgiu, vermelho sumiu.</span></div>
+<div class="legmark"><span class="mark">8</span><span>Grafo interativo: arraste os nós; clique para ver os fatos. Pontilhado = fronteira; tracejado = vínculo fraco.</span></div>
+<div class="legmark"><span class="mark">9</span><span>Cada fato com a <b>fonte</b> e a <b>evidência</b> (#n): clique para ver a resposta bruta; passe o mouse para ver SHA-256, status e URL.</span></div>
+<div class="aviso">🔒 O painel só aceita conexões do próprio computador (127.0.0.1) e recusa pedidos de outros sites (proteção contra CSRF e DNS rebinding). Para encerrar, feche a janela do terminal/lançador.</div>
 </div>
 
 <!-- ==================== RELATÓRIOS ==================== -->
-<h2 id="relatorios">5 · Geração e leitura de relatórios</h2>
+<h2 id="relatorios">6 · Geração e leitura de relatórios</h2>
 <div class="card">
 <p>Todo caso gera automaticamente, na pasta do caso:</p>
 <table>
 <tr><th>Arquivo</th><th>Para quê</th></tr>
-<tr><td><code>dossie.html</code></td><td><b>O relatório humano.</b> Abra com dois cliques: cabeçalho com métricas, grafo SVG de vínculos, e cada entidade em um bloco expansível com os fatos — sempre com a fonte na coluna da esquerda.</td></tr>
+<tr><td><code>dossie.html</code></td><td><b>O relatório humano.</b> Abra com dois cliques: métricas, mudanças (se comparado), grafo SVG, cada entidade com seus fatos — fonte à esquerda, evidência <code>#n</code> à direita (abre o arquivo bruto) — e a lista da fronteira.</td></tr>
 <tr><td><code>caso.json</code></td><td>O mesmo conteúdo legível por máquina — para alimentar outras ferramentas DEIVOSINT, planilhas ou scripts.</td></tr>
-<tr><td><code>ledger.jsonl</code></td><td>A cadeia de custódia (ver seção 6).</td></tr>
+<tr><td><code>ledger.jsonl</code></td><td>A cadeia de custódia (ver <a href="#custodia">Custódia</a>).</td></tr>
 <tr><td><code>evidencias/</code></td><td>A resposta bruta de cada requisição, byte a byte, como chegou.</td></tr>
+<tr><td><code>diff.json</code></td><td>Só em monitoramento: o que mudou desde a coleta anterior.</td></tr>
+<tr><td><code>exportacoes/</code></td><td>Só se você exportar: STIX 2.1, GraphML, CSV, JSON.</td></tr>
 </table>
+<div class="anot" style="max-width:700px">
+<img src="img/dossie.png" alt="Topo do dossiê da demonstração: métricas, mudanças desde a coleta anterior e grafo de vínculos" loading="lazy">
+<span class="mark" style="left:4%;top:7%">1</span>
+<span class="mark" style="left:4%;top:13%">2</span>
+<span class="mark" style="left:4%;top:40.5%">3</span>
+</div>
+<div class="legmark"><span class="mark">1</span><span>Métricas do caso, incluindo quanto do orçamento foi gasto.</span></div>
+<div class="legmark"><span class="mark">2</span><span>Mudanças desde a coleta anterior (só aparece em monitoramento).</span></div>
+<div class="legmark"><span class="mark">3</span><span>Grafo de vínculos; mais abaixo, entidade por entidade, com fonte e evidência de cada fato.</span></div>
 <div class="ok">💡 Para entregar a alguém: envie a <b>pasta do caso inteira</b>. O dossiê abre offline e a pessoa pode verificar a custódia na máquina dela.</div>
 </div>
 
+<!-- ==================== MONITORAR ==================== -->
+<h2 id="monitorar">7 · Monitoramento: o que mudou? <span class="novo">NOVO</span></h2>
+<div class="card">
+<p><b>Ação única:</b> repita a investigação apontando para a coleta anterior.</p>
+<pre><code>python3 garimpo.py monitorar exemplo.com.br --contra casos/2026-10-01_090000_exemplo.com.br</code></pre>
+<p>O GARIMPO coleta de novo, compara entidade por entidade, fato por fato, vínculo por vínculo, e mostra:</p>
+<div class="term"><div class="barra"><i style="background:#ef4444"></i><i style="background:#f59e0b"></i><i style="background:#10b981"></i>&nbsp;Terminal — saída real da demonstração</div>
+<pre><code>Mudanças de 2026-10-01T09:00:00 para 2026-10-08T09:00:00 (seed exemplo.com.br): 15
+  + entidade dominio:staging.exemplo.com.br                      <span class="mark">1</span>
+  + [cnpj:11.222.333/0001-81] [brasilapi_cnpj] sócio (Sócio): BELTRANO EXEMPLO   <span class="mark">2</span>
+  + [ip:203.0.113.10] [internetdb] portas vistas pela Shodan: [443, 8443]
+  - [ip:203.0.113.10] [internetdb] portas vistas pela Shodan: [443]             <span class="mark">3</span></code></pre></div>
+<div class="legmark"><span class="mark">1</span><span>Subdomínio novo nos certificados (CT) — superfície de ataque cresceu.</span></div>
+<div class="legmark"><span class="mark">2</span><span>Mudança societária na Receita: alguém entrou no QSA.</span></div>
+<div class="legmark"><span class="mark">3</span><span>Fato que mudou aparece como "sumiu o antigo, surgiu o novo": aqui, a porta 8443 apareceu na Shodan.</span></div>
+<p>Para comparar dois casos que já existem: <code>python3 garimpo.py diff CASO_ANTIGO CASO_NOVO</code> (acrescente <code>--json</code> para usar em scripts). No painel: campo <b>Comparar com coleta anterior</b>.</p>
+<div class="ok">💡 Rotina sugerida para uma marca ou cliente: um <code>monitorar</code> por semana. O dossiê novo já abre com o quadro de mudanças no topo.</div>
+</div>
+
+<!-- ==================== EXPORTAR ==================== -->
+<h2 id="exportar">8 · Exportações <span class="novo">NOVO</span></h2>
+<div class="card">
+<pre><code>python3 garimpo.py exportar casos/MEU-CASO stix graphml csv</code></pre>
+<table>
+<tr><th>Formato</th><th>Arquivo (em <code>exportacoes/</code>)</th><th>Abre em</th></tr>
+<tr><td><b>STIX 2.1</b></td><td><code>garimpo-stix21.json</code></td><td>MISP, OpenCTI, plataformas de CTI. Entidades viram objetos STIX (domain-name, ipv4-addr, autonomous-system, email-addr, identity, location…), vínculos viram <i>relationships</i> com confiança, e os fatos viram <i>notes</i>. IDs determinísticos: o mesmo domínio tem o mesmo ID em toda exportação.</td></tr>
+<tr><td><b>GraphML</b></td><td><code>garimpo.graphml</code></td><td>Gephi, yEd, Cytoscape — para layouts e métricas de rede (centralidade, comunidades).</td></tr>
+<tr><td><b>CSV</b></td><td><code>entidades.csv</code> + <code>vinculos.csv</code></td><td>Maltego (importação de tabela), Excel, LibreOffice, pandas.</td></tr>
+<tr><td><b>JSON</b></td><td><code>garimpo-grafo.json</code></td><td>Seus scripts e outras ferramentas DEIVOSINT.</td></tr>
+</table>
+<div class="aviso">Privacidade por projeto: CPF <b>nunca</b> é exportado, em nenhum formato.</div>
+</div>
+
+<!-- ==================== MCP ==================== -->
+<h2 id="mcp">9 · Usar com o Claude (servidor MCP) <span class="novo">NOVO</span></h2>
+<div class="card">
+<p>MCP é o padrão que deixa assistentes de IA usarem ferramentas. Com ele, você pede em português ("investiga o domínio X e me diz quem é o titular") e o Claude chama o GARIMPO — e cita as evidências.</p>
+<h3>Claude Desktop</h3>
+<div class="passo"><div class="num">1</div><div>No Claude Desktop: <b>Configurações → Desenvolvedor → Editar configuração</b>. Abre o arquivo <code>claude_desktop_config.json</code>.</div></div>
+<div class="passo"><div class="num">2</div><div>Cole (trocando os caminhos pelos seus; no Windows use <code>python</code> e barras duplas <code>C:\\GARIMPO\\garimpo.py</code>):
+<pre><code>{
+  "mcpServers": {
+    "garimpo": {
+      "command": "python3",
+      "args": ["/caminho/para/toolsR/garimpo.py", "mcp", "--casos", "/caminho/para/toolsR/casos"]
+    }
+  }
+}</code></pre></div></div>
+<div class="passo"><div class="num">3</div><div>Feche e abra o Claude Desktop. As ferramentas <code>garimpo_*</code> aparecem no menu de ferramentas. ✔</div></div>
+<h3>Claude Code</h3>
+<pre><code>claude mcp add garimpo -- python3 /caminho/para/toolsR/garimpo.py mcp --casos /caminho/para/toolsR/casos</code></pre>
+<table><tr><th>Ferramenta</th><th>O que faz</th></tr><tr><td><code>garimpo_investigar</code></td><td>investiga um alvo (profundidade, requisições e entidades com teto)</td></tr><tr><td><code>garimpo_caso</code></td><td>lê um caso: fatos com fonte e evidência, fronteira e vínculos</td></tr><tr><td><code>garimpo_comparar</code></td><td>o que mudou entre duas coletas</td></tr><tr><td><code>garimpo_verificar</code></td><td>confere a cadeia de custódia</td></tr><tr><td><code>garimpo_exportar</code></td><td>STIX 2.1, GraphML, CSV ou JSON</td></tr><tr><td><code>garimpo_casos / garimpo_detectar / garimpo_fontes</code></td><td>listas e utilitários</td></tr></table>
+<div class="aviso">O servidor MCP herda tudo do GARIMPO: sempre passivo, orçamento com teto (máx. 200 requisições por chamada), e só lê/escreve casos dentro da pasta <code>--casos</code>. A IA propõe; você confere as evidências.</div>
+</div>
+
 <!-- ==================== CUSTÓDIA ==================== -->
-<h2 id="custodia">6 · Cadeia de custódia (o lacre digital)</h2>
+<h2 id="custodia">10 · Cadeia de custódia (o lacre digital)</h2>
 <div class="card">
 <figure class="svgbox" style="margin-top:0">
 <svg viewBox="0 0 900 170" xmlns="http://www.w3.org/2000/svg" style="width:100%">
@@ -420,8 +577,19 @@ python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo,
 <p>Resposta esperada: <code>✔ Cadeia de custódia ÍNTEGRA</code>. Qualquer outra coisa lista exatamente qual linha/arquivo foi comprometido.</p>
 </div>
 
+<!-- ==================== FONTES ==================== -->
+<h2 id="fontes">11 · As 28 fontes e a tabela de ruído</h2>
+<div class="card">
+<p>Gerada do próprio código (é o que <code>python3 garimpo.py fontes</code> imprime). Nenhuma toca a infraestrutura do alvo; todas são keyless.</p>
+<div style="overflow-x:auto"><table>
+<tr><th>Fonte</th><th>Tipos</th><th>Nível</th><th>Envia para</th><th>O quê</th></tr>
+<tr><td><code>rdap_dominio</code></td><td>dominio</td><td>passiva</td><td>rdap.registro.br (.br) / rdap.org</td><td>1 requisição ao servidor RDAP do registro — nunca ao alvo</td></tr><tr><td><code>dns</code></td><td>dominio</td><td>passiva*</td><td>dns.google (DoH)</td><td>A/AAAA/MX/NS/TXT/SOA/CAA/DMARC via resolvedor público</td></tr><tr><td><code>crtsh</code></td><td>dominio</td><td>passiva</td><td>crt.sh</td><td>lê o índice público de Certificate Transparency</td></tr><tr><td><code>certspotter</code></td><td>dominio</td><td>passiva</td><td>api.certspotter.com</td><td>lê emissões de certificados já registradas (alternativa ao crt.sh)</td></tr><tr><td><code>wayback</code></td><td>dominio</td><td>passiva</td><td>web.archive.org (CDX)</td><td>lê o índice do Internet Archive</td></tr><tr><td><code>urlscan</code></td><td>dominio</td><td>passiva</td><td>urlscan.io (busca pública)</td><td>lê varreduras que terceiros JÁ fizeram; não submete nada</td></tr><tr><td><code>rdap_ip</code></td><td>ip</td><td>passiva</td><td>rdap.org → RIR responsável</td><td>dono do bloco, país e contatos do registro regional</td></tr><tr><td><code>internetdb</code></td><td>ip</td><td>passiva</td><td>internetdb.shodan.io</td><td>lê o índice EXISTENTE da Shodan; não dispara scan</td></tr><tr><td><code>ptr</code></td><td>ip</td><td>passiva*</td><td>dns.google (DoH)</td><td>DNS reverso (PTR)</td></tr><tr><td><code>ripestat_ip</code></td><td>ip</td><td>passiva</td><td>stat.ripe.net</td><td>prefixo anunciado e ASN de origem (dados de roteamento BGP)</td></tr><tr><td><code>ripestat_asn</code></td><td>asn</td><td>passiva</td><td>stat.ripe.net</td><td>dono do sistema autônomo e quantidade de prefixos anunciados</td></tr><tr><td><code>tor_saida</code></td><td>ip</td><td>passiva</td><td>check.torproject.org</td><td>baixa UMA vez por investigação a lista pública de saídas Tor e compara localmente</td></tr><tr><td><code>email_local</code></td><td>email</td><td>offline</td><td>nenhum</td><td>separa domínio e parte local do e-mail</td></tr><tr><td><code>gravatar</code></td><td>email</td><td>passiva</td><td>gravatar.com</td><td>1 requisição com o hash MD5 do e-mail (o dono não é notificado)</td></tr><tr><td><code>pgp</code></td><td>email</td><td>passiva</td><td>keys.openpgp.org</td><td>procura chave pública publicada (só e-mails verificados aparecem)</td></tr><tr><td><code>github</code></td><td>username</td><td>passiva</td><td>api.github.com</td><td>perfil público (60 req/h sem token)</td></tr><tr><td><code>github_commits</code></td><td>username</td><td>passiva</td><td>api.github.com (eventos públicos)</td><td>e-mails de autor em commits públicos recentes</td></tr><tr><td><code>keybase</code></td><td>username</td><td>passiva</td><td>keybase.io</td><td>contas e domínios PROVADOS criptograficamente pelo titular</td></tr><tr><td><code>hackernews</code></td><td>username</td><td>passiva</td><td>hacker-news.firebaseio.com</td><td>perfil público do Hacker News (API oficial)</td></tr><tr><td><code>brasilapi_cnpj</code></td><td>cnpj</td><td>passiva</td><td>brasilapi.com.br</td><td>dados públicos da Receita Federal (QSA, CNAE, endereço)</td></tr><tr><td><code>brasilapi_cep</code></td><td>cep</td><td>passiva</td><td>brasilapi.com.br</td><td>logradouro e coordenadas do CEP (Correios e bases abertas)</td></tr><tr><td><code>cpf_offline</code></td><td>cpf</td><td>offline</td><td>nenhum</td><td>SÓ valida dígitos e região fiscal — CPF nunca é consultado nem pivotado</td></tr><tr><td><code>telefone_offline</code></td><td>telefone</td><td>offline</td><td>nenhum</td><td>país, DDD/UF e tipo de linha por regra de numeração</td></tr><tr><td><code>documento_invalido</code></td><td>documento_invalido</td><td>offline</td><td>nenhum</td><td>formato de CPF/CNPJ com DV errado — nada é consultado</td></tr><tr><td><code>url_host</code></td><td>url</td><td>offline</td><td>nenhum</td><td>extrai o host da URL</td></tr><tr><td><code>wayback_url</code></td><td>url</td><td>passiva</td><td>archive.org (availability API)</td><td>snapshot mais próximo da URL no Internet Archive</td></tr><tr><td><code>circl_hashlookup</code></td><td>hash</td><td>passiva</td><td>hashlookup.circl.lu</td><td>o arquivo é conhecido (NSRL e outras bases de software legítimo)?</td></tr><tr><td><code>nota_pessoa</code></td><td>pessoa, organizacao</td><td>offline</td><td>nenhum</td><td>registra o nome no grafo; pivô por nome exige buscador (fora do modo keyless)</td></tr>
+</table></div>
+<p style="font-size:.84rem;color:var(--mudo)"><b>passiva</b>: terceiro que já tem os dados · <b>passiva*</b>: DNS via resolvedor público (os nameservers do alvo veem o resolvedor, não você) · <b>offline</b>: nada sai da máquina.</p>
+</div>
+
 <!-- ==================== PROBLEMAS ==================== -->
-<h2 id="problemas">7 · Solução de problemas</h2>
+<h2 id="problemas">12 · Solução de problemas</h2>
 <div class="card">
 <table>
 <tr><th>Sintoma</th><th>Causa provável</th><th>Solução</th></tr>
@@ -434,12 +602,15 @@ python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo,
 <tr><td>Acentos estranhos no Windows</td><td>Terminal sem UTF-8</td><td>Use os lançadores <code>.bat</code> (já configuram <code>chcp 65001</code> e <code>PYTHONUTF8=1</code>); a ferramenta também força UTF-8 na saída</td></tr>
 <tr><td>Detectou <code>documento_invalido</code></td><td>Você digitou algo no formato de CPF/CNPJ, mas os dígitos verificadores não batem</td><td>Quase sempre é erro de digitação. Confira o número; nada foi consultado</td></tr>
 <tr><td>Telefone virou <code>username</code> ou <code>pessoa</code></td><td>Menos de 10 dígitos (faltou o DDD)</td><td>Digite com DDD: <code>(31) 99999-8888</code> ou <code>+55 31 99999-8888</code></td></tr>
+<tr><td>Painel: "Host não permitido" ou página não abre</td><td>Acessou por outro endereço, ou a porta 8765 está ocupada</td><td>Use exatamente <code>http://127.0.0.1:8765</code>; ou outra porta: <code>python3 garimpo.py painel --porta 8790</code></td></tr>
+<tr><td>Orçamento acaba rápido em domínios</td><td>Cada domínio consultado custa ~14 requisições (RDAP, 8 tipos DNS, CT×2, Wayback×2, urlscan)</td><td>Suba <code>--max-requisicoes</code> ou baixe <code>--max-entidades</code>; olhe a fronteira e investigue só o que importa</td></tr>
+<tr><td>Claude não mostra as ferramentas do GARIMPO</td><td>Caminho errado no JSON do MCP ou o app não foi reiniciado</td><td>Teste o caminho no terminal: <code>python3 /caminho/garimpo.py versao</code>; depois feche e abra o Claude</td></tr>
 <tr><td>macOS: o <code>.command</code> não abre</td><td>Gatekeeper bloqueia scripts baixados</td><td>Botão direito → Abrir → Abrir (uma vez só)</td></tr>
 </table>
 </div>
 
 <!-- ==================== GLOSSÁRIO ==================== -->
-<h2 id="glossario">8 · Glossário</h2>
+<h2 id="glossario">13 · Glossário</h2>
 <div class="card"><dl>
 <dt>OSINT</dt><dd>Inteligência de fontes abertas: informação pública, coletada legalmente.</dd>
 <dt>Passivo</dt><dd>Coleta que não envia requisições à infraestrutura do alvo — só a terceiros que já têm dados sobre ele.</dd>
@@ -458,26 +629,36 @@ python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo,
 <dt>Keyless</dt><dd>Fonte que não exige chave de API nem cadastro.</dd>
 <dt>stdlib</dt><dd>A biblioteca padrão do Python — o GARIMPO usa só ela; nada de <code>pip install</code>.</dd>
 <dt>Dígito verificador (DV)</dt><dd>Os dois últimos dígitos de CPF/CNPJ, calculados a partir dos outros. Se não batem, o número está errado — o GARIMPO checa isso sem internet.</dd>
+<dt>Fronteira</dt><dd>Entidades descobertas que <b>não</b> foram consultadas (limite de profundidade, de entidades ou confiança baixa). Aparecem pontilhadas no grafo — são as próximas pistas.</dd>
+<dt>ASN / BGP</dt><dd>Número do sistema autônomo (a "operadora" na internet) e o protocolo que anuncia quais blocos de IP ela controla.</dd>
+<dt>STIX 2.1</dt><dd>Formato padrão (OASIS) para trocar inteligência de ameaças entre plataformas como MISP e OpenCTI.</dd>
+<dt>GraphML</dt><dd>Formato XML de grafos, aberto pelo Gephi, yEd e Cytoscape.</dd>
+<dt>MCP</dt><dd>Model Context Protocol: o padrão que deixa assistentes de IA (como o Claude) usarem ferramentas externas.</dd>
+<dt>QSA</dt><dd>Quadro de Sócios e Administradores de uma empresa, público na Receita Federal.</dd>
+<dt>publicIds (RDAP)</dt><dd>Campo do RDAP onde o registro.br publica o CNPJ do titular de domínios <code>.br</code> de empresas.</dd>
 <dt>Profundidade</dt><dd>Quantos saltos de pivô separam uma entidade do seed: 0 é o seed, 1 é o que foi achado a partir dele.</dd>
 </dl></div>
 
 <!-- ==================== TÉCNICA ==================== -->
-<h2 id="tecnica">9 · Seção técnica</h2>
+<h2 id="tecnica">14 · Seção técnica</h2>
 <div class="card">
 <h3>Origem: engenharia reversa do OpenOSINT</h3>
 <p>O GARIMPO nasceu da dissecação do <code>OpenOSINT/OpenOSINT</code> (~22 mil linhas, 100 módulos): manteve o passivo-por-padrão, a tabela de ruído e o orçamento rígido; corrigiu 9 lacunas (Brasil ausente, dependência de LLM/chaves, extração por regex frágil, proveniência sem forense, instalação pesada, fontes keyless ignoradas, relatórios sem pt-BR…). O estudo completo, lacuna a lacuna com evidência no código, está em <code>docs/ENGENHARIA-REVERSA-OPENOSINT.md</code>.</p>
 
-<h3>Resultado dos testes (ambiente de nuvem, 2026-10-15)</h3>
+<h3>Resultado dos testes (ambiente de nuvem, 2026-10-17)</h3>
 <table>
 <tr><th>Bateria</th><th>Resultado</th></tr>
-<tr><td>Suíte automatizada <code>testes/test_garimpo.py</code> (unittest, stdlib, offline)</td><td>✅ <b>21/21</b> em 0,03 s</td></tr>
-<tr><td>— detecção: matriz de 20 valores (CPF/CNPJ válidos e inválidos, telefones BR formatados, IPv4/IPv6, hash, domínios, pessoa, username)</td><td>✅</td></tr>
-<tr><td>— custódia: íntegra; evidência adulterada; ledger forjado; registro removido; caso retomado</td><td>✅ 5/5 — cada adulteração apontada na linha exata</td></tr>
-<tr><td>— parsers das fontes contra fixtures no formato documentado (RDAP registro.br/rdap.org, DoH, crt.sh, Wayback, InternetDB com e sem dados, BrasilAPI, GitHub, e-mail, telefone)</td><td>✅ 9/9</td></tr>
-<tr><td>— pivô BFS (profundidade e confiança &lt; 0,6 barradas), teto duro de requisições, demo idempotente, dossiê à prova de injeção de HTML</td><td>✅ 4/4</td></tr>
-<tr><td>Saída redirecionada em cp1252 (cenário Windows)</td><td>✅ sem quebra de encoding</td></tr>
-<tr><td>Figura isométrica: verificação de pontas de linha (temas escuro e claro), desktop, celular 390 px, ciclo completo até "orçamento esgotado" e reinício</td><td>✅ 0 pontas soltas; console limpo</td></tr>
-<tr><td>Pipeline ao vivo ponta a ponta (registro.br)</td><td>✅ executou; ⚠️ fontes bloqueadas pelo firewall da sandbox (403 do proxy) — cada erro foi registrado na custódia; <b>validar na máquina local</b></td></tr>
+<tr><td>Suíte automatizada <code>testes/test_garimpo.py</code> (unittest, stdlib, offline)</td><td>✅ <b>48/48</b> em Python <b>3.9, 3.11, 3.12 e 3.13</b> (~3 s)</td></tr>
+<tr><td>— detecção (24 valores, incl. CEP e ASN) e normalização que deduplica grafias</td><td>✅</td></tr>
+<tr><td>— custódia: íntegra, evidência adulterada, ledger forjado, registro removido, caso retomado, <b>40 gravações concorrentes</b></td><td>✅</td></tr>
+<tr><td>— rede: teto duro, cache por URL, rastreio fato→evidência, erro de rede registrado na custódia</td><td>✅</td></tr>
+<tr><td>— 20 testes de fontes contra fixtures no formato documentado (RDAP .br com publicIds, DNS completo, CT×2, urlscan, InternetDB, RIPEstat, Tor, OpenPGP com parser de pacotes, GitHub + commits, Keybase, Hacker News, Gravatar, CNPJ, CEP, hashlookup)</td><td>✅ — inclusive "CPF nunca aparece nem pivota"</td></tr>
+<tr><td>— motor: profundidade, confiança, fronteira, fonte quebrada não derruba, migração de casos 1.x, dossiê à prova de injeção</td><td>✅</td></tr>
+<tr><td>— demo com o motor real + diff; STIX 2.1 (tipos, IDs, referências), GraphML válido, CSV, CPF nunca exportado</td><td>✅</td></tr>
+<tr><td>— MCP de ponta a ponta (subprocesso stdio: initialize, tools/list, chamadas, path traversal, método inexistente, JSON inválido)</td><td>✅ stdout só com JSON-RPC</td></tr>
+<tr><td>— painel de ponta a ponta (HTTP real): API, CSP, exportação zip, evidências, investigação assíncrona; <b>defesas</b>: Host forjado, POST sem cabeçalho, formulário HTML, 4 tentativas de path traversal</td><td>✅ todas bloqueadas</td></tr>
+<tr><td>— CLI com saída forçada em cp1252 (cenário Windows)</td><td>✅</td></tr>
+<tr><td>Fontes ao vivo</td><td>⚠️ bloqueadas pelo firewall da sandbox (403 do proxy); cada falha fica registrada na custódia — <b>validar na máquina local</b></td></tr>
 </table>
 <p>Rode você mesmo: <code>python3 -m unittest discover -s testes -v</code>. Detalhes e pendências: <code>testes/RELATORIO-DE-TESTES.md</code>.</p>
 
@@ -487,11 +668,14 @@ python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/tipo,
 <li><b>CPF só offline</b> — validação de dígitos verificadores e região fiscal; nenhuma consulta externa, por decisão ética documentada no código.</li>
 <li><b>Extração estruturada</b> — cada fonte devolve tuplas <code>(tipo, valor, relação, confiança)</code> a partir do JSON da API; o pivô nunca interpreta texto renderizado.</li>
 <li><b>Confiança ≥ 0,6 para pivotar</b> — herdada da calibração do OpenOSINT; abaixo disso a descoberta entra no grafo, mas não vira novo alvo.</li>
+<li><b>Fato → evidência</b> — cada fato guarda os números (<code>#seq</code>) das respostas brutas da chamada que o produziu; o dossiê e o painel linkam o arquivo e mostram o SHA-256.</li>
+<li><b>Paralelo com cortesia</b> — fontes de uma mesma camada rodam em paralelo, mas cada site recebe no máximo uma requisição a cada 0,35 s; a mesma URL nunca é pedida duas vezes na mesma investigação.</li>
+<li><b>Fonte é plugin</b> — uma função decorada com <code>@fonte(nome, tipos, nível, destino, descrição)</code>; a tabela de ruído sai do registro, nunca de um texto mantido à mão.</li>
 <li><b>Falha nunca derruba</b> — timeout 15 s/requisição; erro vira registro de custódia com <code>status_http: 0</code> e a investigação continua.</li>
 </ul>
 </div>
 
-<footer>Manual do GARIMPO 1.1.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
+<footer>Manual do GARIMPO 2.0.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
 </div>
 </body>
 </html>

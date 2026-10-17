@@ -87,3 +87,24 @@ O que foi **deliberadamente deixado de fora** (escopo): loop agêntico com LLM, 
 ---
 
 *Documento produzido para o repositório [Ridd1kulusC0d3r/toolsR](https://github.com/Ridd1kulusC0d3r/toolsR).*
+
+---
+
+## 7. GARIMPO 2.0 — fechando a distância (2026-10-17)
+
+A 1.x corrigiu as lacunas do núcleo do OpenOSINT, mas ficou atrás dele em três frentes que o próprio estudo apontou como acertos: **MCP server**, **interface web** e **execução paralela**. A 2.0 alcança as três sem abrir mão de stdlib pura, e avança onde o OpenOSINT não chega.
+
+| Frente | OpenOSINT | GARIMPO 2.0 |
+|---|---|---|
+| Servidor MCP | sim (SDK `mcp`) | **sim, JSON-RPC stdio em stdlib**; casos confinados a uma pasta; stdout exclusivo do protocolo |
+| Interface web | FastAPI + uvicorn + SSE (deps) | **`http.server` stdlib**, só 127.0.0.1, anti-CSRF (cabeçalho obrigatório força preflight), anti DNS rebinding (Host), anti path traversal, CSP |
+| Paralelismo | `asyncio.gather` | `ThreadPoolExecutor` por camada + **cortesia por host** + **cache por URL** |
+| Tabela de ruído gerada do código | sim (`tool_policy`) | **sim** — agora do registro de plugins `@fonte(...)` |
+| Proveniência | sidecar por statement (confiança, extractor, run) | **fato → evidência `#seq`** com SHA-256 e bytes brutos, verificável offline |
+| Exportação para plataformas de CTI | não encontrada | **STIX 2.1** (IDs determinísticos, relationships, notes, grouping), GraphML, CSV |
+| Monitoramento | Monitor é produto **hospedado e pago** | **diff local** entre coletas (`monitorar`, `diff`, painel) |
+| Fronteira explícita | não | nós descobertos e não consultados aparecem no grafo e no dossiê |
+| Fontes BR | nenhuma | RDAP `.br` → **CNPJ do titular** (publicIds) → QSA → CEP; DDD → UF |
+| Fontes keyless novas | — | RIPEstat, Certspotter, urlscan (leitura), Tor, CIRCL hashlookup, Keybase, Hacker News, keys.openpgp.org (parser OpenPGP próprio), e-mails de commits |
+
+Ainda deliberadamente fora: loop agêntico com LLM embutido (no GARIMPO 2.0 o raciocínio fica com o cliente MCP, e a ferramenta continua determinística), deduplicação probabilística FtM/nomenklatura e qualquer modo ativo.

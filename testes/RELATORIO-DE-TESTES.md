@@ -1,60 +1,58 @@
-# Relatório de testes em nuvem — GARIMPO 1.1.0
+# Relatório de testes em nuvem — GARIMPO 2.0.0
 
-**Ambiente:** sandbox Linux (Anthropic cloud), Python 3, Chromium headless, 2026-10-15 (America/Sao_Paulo).
-**Limitação do ambiente:** a sandbox tem **allowlist de rede**. Os endpoints OSINT reais (dns.google, rdap.org, rdap.registro.br, crt.sh, internetdb.shodan.io, brasilapi.com.br, web.archive.org, gravatar.com) retornam `403 Forbidden` do proxy — bloqueio do ambiente, não defeito da ferramenta. Por isso os parsers foram testados contra **fixtures no formato documentado** de cada API, e a validação ao vivo fica para a máquina local (seção 5).
+**Ambiente:** sandbox Linux (Anthropic cloud), Chromium headless, 2026-10-17 (America/Sao_Paulo).
+**Pythons testados:** 3.9.25, 3.11, 3.12, 3.13.16.
+**Limitação do ambiente:** a sandbox tem allowlist de rede; todas as fontes OSINT reais respondem `403 Forbidden` do proxy. Os parsers foram testados contra **fixtures no formato documentado** de cada API; a validação ao vivo fica para a máquina local (seção 5).
 
-## 1. Suíte automatizada — `testes/test_garimpo.py` ✅ 21/21
+## 1. Suíte automatizada — `testes/test_garimpo.py` ✅ 48/48 (em cada versão de Python)
 
 ```bash
-python3 -m unittest discover -s testes -v      # 21 testes, ~0,03 s, offline, só stdlib
+python3 -m unittest discover -s testes -v      # ~3 s, offline, só stdlib
 ```
 
 | Grupo | Testes | O que prova |
 |---|---|---|
-| Detecção | 3 | Matriz de 20 valores: CPF/CNPJ válidos (formatados e crus), CPF/CNPJ formatados com DV inválido → `documento_invalido`, telefones BR (`+55 31 99999-8888`, `(31) 99999-8888`, crus), e-mail, URL, IPv4, IPv6, hash MD5, domínios, pessoa, username. CPF nunca casa com a regex de domínio. Validadores de DV. |
-| Custódia | 5 | Caso íntegro; **evidência adulterada** (linha exata apontada); **ledger forjado** (campo alterado); **registro removido** (corrente quebrada); caso retomado continua a corrente. |
-| Orçamento | 1 | Com teto 0, nenhuma requisição sai. |
-| Fontes (parsers) | 9 | RDAP do registro.br para `.br` e rdap.org para o resto; eventos, nameservers e vCard; DoH → IP; crt.sh → subdomínios (sem o próprio seed); Wayback CDX; InternetDB com dados e com `{"detail": …}`; BrasilAPI → **organização** + sócios; CPF faz **zero** requisições; GitHub → e-mail público; e-mail → domínio; telefone BR formatado → DDD/celular. |
-| Pivô e dossiê | 3 | BFS barra profundidade além do limite e confiança < 0,6; demo idempotente (ledger não duplica); dossiê **escapa HTML** (sem injeção via dado coletado); comando `verificar` impresso com o caminho certo. |
+| Detecção | 4 | Matriz de 24 valores (CPF/CNPJ válidos e inválidos, telefones BR formatados, **CEP**, **ASN**, IPv4/IPv6, hash, domínio, pessoa, username); CPF nunca casa como domínio; validadores; **normalização deduplica** grafias (CNPJ com/sem máscara, domínio com maiúsculas e ponto final). |
+| Custódia | 6 | Íntegra; evidência adulterada; ledger forjado; registro removido; caso retomado; **40 gravações concorrentes** mantêm a corrente. |
+| Rede | 3 | Teto duro; **cache por URL** (2 URLs → 2 buscas, 3 pedidos); **rastreio fato→evidência**; erro de rede vira registro de custódia com status 0. |
+| Fontes | 21 | RDAP `.br` com `publicIds` → pivô de **CNPJ**, **CPF descartado** (nem nos fatos); RDAP genérico; DNS completo (AAAA, MX, SPF include, CAA, DMARC); crt.sh e Certspotter; urlscan (IP não pivota); InternetDB com e sem dados; RIPEstat IP e ASN; Tor; **parser OpenPGP** (UIDs de pacotes tag 13); PGP → outros e-mails; GitHub + **commits** (noreply filtrado); Keybase (provas → username e domínio); Hacker News (e-mail em `about` com entidade HTML); e-mail local; Gravatar; CNPJ completo (organização, sócio, CEP, e-mail, Simples); CEP; CPF e telefone offline (DDD → UF); CIRCL hashlookup conhecido/desconhecido; registro de fontes sem nomes duplicados e com destino declarado. |
+| Motor e dossiê | 4 | BFS: profundidade, confiança < 0,6 e **fronteira**; **fonte que levanta exceção não derruba** a investigação; **migração de casos 1.x**; dossiê escapa HTML. |
+| Demo | 1 | Gerada pelo **motor real** com fixtures; idempotente; pivô RDAP → CNPJ; ASN alcançado; `diff.json` com subdomínio e sócio novos; **todo fato aponta para evidência que existe no ledger**. |
+| Exportações e diff | 4 | STIX 2.1: tipos esperados, IDs válidos e **determinísticos**, toda relationship aponta para objeto existente; **CPF nunca exportado** (STIX e GraphML); GraphML válido (parse XML, contagem de nós); CSV; diff vazio. |
+| MCP | 2 | **Subprocesso stdio real:** initialize, notificação sem resposta, tools/list, verificar, **path traversal recusado**, comparar, método inexistente (−32601), JSON inválido (−32700); **stdout só contém JSON-RPC**; truncamento do resumo. |
+| Painel | 3 | **Servidor HTTP real:** página com CSP, lista de casos, caso com diff e ledger, verificação, exportação zip, dossiê com links reescritos, evidência; **defesas**: Host forjado (403), POST sem `X-Garimpo` (403), formulário HTML simples (403), 4 tentativas de path traversal (404); investigação assíncrona (CPF: 0 requisições). |
+| CLI | 1 | versão, fontes, demo, verificar, exportar, diff — com `PYTHONIOENCODING=cp1252` (cenário Windows). |
 
-### Validação dos esquemas usados nas fixtures
-- **InternetDB:** campos `cpes, hostnames, ip, ports, tags, vulns` confirmados no anúncio oficial da Shodan.
-- **BrasilAPI CNPJ:** campos de topo (`razao_social`, `nome_fantasia`, `descricao_situacao_cadastral`, `data_inicio_atividade`, `municipio`, `uf`, `cnae_fiscal_descricao`) confirmados em código de terceiros que consome a API. O formato interno de `qsa` (`nome_socio`, `qualificacao_socio`) **não pôde ser confirmado em documentação nesta sessão** — confira na primeira consulta real a um CNPJ com sócios.
-- RDAP (RFC 9083), DoH JSON do Google, crt.sh `output=json`, Wayback CDX e GitHub `/users`: formatos públicos estáveis, usados conforme a especificação.
+## 2. Verificações manuais em navegador ✅
 
-## 2. Testes de regressão dos bugs corrigidos na 1.1.0 ✅
+- **Painel** renderizado no Chromium com a demo: formulário, lista de casos, quadro de mudanças, grafo de forças, fatos com evidência. Capturas usadas no manual (`manual/img/`).
+- **Dossiê 2.0** renderizado: métricas, mudanças, grafo, fronteira, uso de fontes.
+- **Manual** renderizado por seção com Playwright: **0 erros de console**.
+- **Servidor MCP** exercitado manualmente com 7 mensagens (incluindo lixo e traversal).
 
-| Bug na 1.0.0 | Antes | Agora |
-|---|---|---|
-| CPF formatado com DV inválido | `dominio` (faria RDAP de um CPF) | `documento_invalido`, nenhuma consulta |
-| Telefone BR formatado | `pessoa` | `telefone` |
-| Comando `verificar` no dossiê | só o nome da pasta | caminho completo do caso |
-| Demo rodada 2× | ledger com registros duplicados | ledger recomeça (2 registros) |
-| Razão social de CNPJ | nó `pessoa` | nó `organizacao` |
-| Saída redirecionada no Windows (cp1252) | `UnicodeEncodeError` em `✔`/`⛏️` | saída forçada em UTF-8 + `PYTHONUTF8=1` nos `.bat` |
-| Arquivo do ledger aberto sem fechar | vazamento de handle | leitura única com `with` |
+## 3. Ao vivo (executado; bloqueado pelo ambiente ⚠️)
 
-## 3. Figura isométrica (`manual/figura/`) ✅
+Investigações reais via CLI, painel e MCP rodaram de ponta a ponta sem exceção; cada `403` do proxy ficou registrado na custódia com `status_http: 0`.
 
-- Verificação de pontas de linha da skill /anatomy: **0 de 531 pontas soltas**, tema escuro e claro.
-- Capturas: desktop 1440, celular 390 px (sem rolagem lateral), tema claro, ciclo completo até `orçamento esgotado · 8/8` e reinício automático para `casa · prof 0 · 0/8`.
-- Console limpo em todas as execuções.
+## 4. Esquemas conferidos em documentação
 
-## 4. Pipeline ao vivo (executado; fontes bloqueadas pelo ambiente ⚠️)
+- InternetDB (`cpes, hostnames, ip, ports, tags, vulns`) — anúncio oficial da Shodan.
+- BrasilAPI CNPJ (campos de topo) — código de terceiros que consome a API.
+- **Não confirmados nesta sessão** (formato usado conforme conhecimento prévio; conferir na 1ª execução real): `qsa` da BrasilAPI, BrasilAPI CEP v2 (`location.coordinates`), RIPEstat (`prefix-overview`, `as-overview`, `announced-prefixes`), Certspotter (`dns_names`), urlscan (`results[].page`), Keybase (`proofs_summary.all`), CIRCL hashlookup (`FileName`), keys.openpgp.org (armadura), e o campo `payload.commits` dos eventos públicos do GitHub (a API pode não trazer mais os commits — a fonte informa quando nenhum e-mail aparece).
 
-`python3 garimpo.py investigar registro.br --profundidade 1` executou de ponta a ponta sem exceção: 7 requisições, cada falha `403` registrada na cadeia de custódia com `status_http: 0`, dossiê e ledger gerados, orçamento respeitado.
-
-## 5. Pendente — validar na sua máquina (2 minutos)
+## 5. Pendente — validar na sua máquina (5 minutos)
 
 ```bash
-python3 garimpo.py investigar registro.br          # RDAP registro.br, DNS, crt.sh, Wayback
-python3 garimpo.py investigar 8.8.8.8              # RDAP de IP, InternetDB, PTR
-python3 garimpo.py investigar <um CNPJ com sócios> # confere o formato de qsa
-python3 garimpo.py verificar casos/<caso>
+python3 garimpo.py investigar registro.br          # RDAP .br (publicIds), DNS, CT, Wayback, urlscan
+python3 garimpo.py investigar 8.8.8.8              # RDAP, InternetDB, PTR, RIPEstat → AS15169, Tor
+python3 garimpo.py investigar AS15169              # RIPEstat ASN
+python3 garimpo.py investigar <CNPJ com sócios>    # QSA, CEP, contatos
+python3 garimpo.py investigar <seu username>       # GitHub, commits, Keybase, Hacker News
+python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hashlookup
 ```
 
-Esperado: fatos com fonte `rdap_registro_br`, `dns`, `crtsh`, `internetdb`, `brasilapi` no dossiê, e `✔ Cadeia de custódia ÍNTEGRA`.
+Se alguma fonte voltar sem fatos, a resposta bruta está em `evidencias/` — é ela que diz se o formato mudou.
 
 ## 6. Veredito
 
-Núcleo (detecção, pivô, orçamento, custódia, dossiê) e figura **aprovados**. Fontes ao vivo **prontas, mas não observadas** nesta sandbox; o tratamento de erro já provou degradar sem perder rastro.
+Núcleo, fontes (contra fixtures), exportações, monitoramento, MCP e painel **aprovados** em quatro versões de Python. Fontes ao vivo **prontas, não observadas** nesta sandbox.
