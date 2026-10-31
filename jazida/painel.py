@@ -180,7 +180,18 @@ class Manipulador(BaseHTTPRequestHandler):
                     if os.path.isfile(p):
                         with open(p, encoding="utf-8") as f:
                             caso["diff"] = json.load(f)
+                    from .analise import exposicao, linha_do_tempo, reputacao, socios_cruzados
+                    caso["analise"] = {"reputacao": reputacao(caso), "linha_do_tempo": linha_do_tempo(caso),
+                                       "socios_cruzados": socios_cruzados(caso), "exposicao": exposicao(caso),
+                                       "tem_espelho": os.path.isfile(os.path.join(d, "espelho.html"))}
                     return self._json(200, caso)
+                if resto == ["espelho"]:
+                    cam = os.path.join(d, "espelho.html")
+                    if not os.path.isfile(cam):
+                        from .espelho import gerar_relatorio
+                        gerar_relatorio(carregar_caso(d), d)
+                    with open(cam, "rb") as f:
+                        return self._enviar(200, f.read(), "text/html; charset=utf-8", csp=CSP_DOSSIE)
                 if resto == ["verificar"]:
                     ok, prob = Custodia.verificar(d)
                     return self._json(200, {"ok": ok, "problemas": prob})

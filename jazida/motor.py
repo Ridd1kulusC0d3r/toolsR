@@ -42,10 +42,22 @@ def _executar(cliente: Cliente, fonte, valor: str):
 
 def investigar(seed: str, orc: Orcamento, caso_dir: str, silencioso: bool = False,
                paralelo: int = 4, log=None, progresso=None, cliente_cls=Cliente) -> dict:
+    """Investiga um seed. Para vários de uma vez, use investigar_varios (lote)."""
+    return investigar_varios([seed], orc, caso_dir, silencioso, paralelo, log, progresso, cliente_cls)
+
+
+def investigar_varios(seeds, orc: Orcamento, caso_dir: str, silencioso: bool = False,
+                      paralelo: int = 4, log=None, progresso=None, cliente_cls=Cliente) -> dict:
+    """BFS a partir de um ou mais seeds, compartilhando custódia, grafo e orçamento.
+
+    Todos os seeds entram na camada 0; o pivô segue dali sob o mesmo orçamento.
+    É a base do comando `lote` (enriquecimento de IOCs) e do `investigar`."""
     log = log or print
+    seeds = [s.strip() for s in seeds if s and s.strip()]
+    if not seeds:
+        raise ValueError("nenhum seed informado")
     custodia = Custodia(caso_dir)
     cliente = cliente_cls(custodia, orc, silencioso, log=log)
-    tipo_seed = detectar_tipo(seed)
     inicio = time.time()
     nos: dict[str, dict] = {}
     arestas: list[dict] = []
@@ -58,7 +70,10 @@ def investigar(seed: str, orc: Orcamento, caso_dir: str, silencioso: bool = Fals
                       "investigado": investigado, "fatos": []}
         return k
 
-    camada = [(tipo_seed, seed.strip())]
+    seed0 = seeds[0]
+    tipo_seed = detectar_tipo(seed0)
+    # dedup mantendo ordem
+    camada = list(dict.fromkeys((detectar_tipo(s), s) for s in seeds))
     prof = 0
     with ThreadPoolExecutor(max_workers=max(1, paralelo)) as pool:
         while camada:
@@ -110,14 +125,17 @@ def investigar(seed: str, orc: Orcamento, caso_dir: str, silencioso: bool = Fals
     caso = {
         "versao_esquema": 2,
         "ferramenta": f"GARIMPO {VERSAO} (DEIVOSINT)",
-        "seed": seed, "tipo_seed": tipo_seed,
+        "seed": seed0, "tipo_seed": tipo_seed,
         "iniciado_utc": _dt.datetime.fromtimestamp(inicio, _dt.timezone.utc).isoformat(),
         "duracao_s": round(time.time() - inicio, 2),
         "orcamento": {"profundidade": orc.profundidade, "max_entidades": orc.max_entidades,
                       "max_requisicoes": orc.max_requisicoes, "requisicoes_feitas": orc.requisicoes},
         "fontes_usadas": uso_fontes,
-        "grafo": {"no_seed": chave_de(tipo_seed, seed), "nos": nos, "arestas": arestas},
+        "grafo": {"no_seed": chave_de(tipo_seed, seed0), "nos": nos, "arestas": arestas},
     }
+    if len(seeds) > 1:
+        caso["seeds"] = seeds
+        caso["seeds_chaves"] = [chave_de(detectar_tipo(s), s) for s in seeds]
     salvar_caso(caso, caso_dir)
     return caso
 

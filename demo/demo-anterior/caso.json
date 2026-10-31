@@ -1,6 +1,6 @@
 {
   "versao_esquema": 2,
-  "ferramenta": "GARIMPO 2.0.0 (DEIVOSINT) · DEMO offline (dados fictícios)",
+  "ferramenta": "GARIMPO 2.1.0 (DEIVOSINT) · DEMO offline (dados fictícios)",
   "seed": "exemplo.com.br",
   "tipo_seed": "dominio",
   "iniciado_utc": "2026-10-01T09:00:00+00:00",
@@ -8,8 +8,8 @@
   "orcamento": {
     "profundidade": 2,
     "max_entidades": 15,
-    "max_requisicoes": 140,
-    "requisicoes_feitas": 67
+    "max_requisicoes": 220,
+    "requisicoes_feitas": 73
   },
   "fontes_usadas": {
     "rdap_dominio": 4,
@@ -18,12 +18,17 @@
     "certspotter": 4,
     "wayback": 4,
     "urlscan": 4,
+    "openphish": 4,
+    "digitalside": 5,
+    "threatfox": 5,
     "brasilapi_cnpj": 1,
     "rdap_ip": 1,
     "internetdb": 1,
     "ptr": 1,
     "ripestat_ip": 1,
     "tor_saida": 1,
+    "feodo_c2": 1,
+    "sslbl_c2": 1,
     "nota_pessoa": 2,
     "brasilapi_cep": 1,
     "email_local": 1,
@@ -273,6 +278,27 @@
             "evidencias": [
               14
             ]
+          },
+          {
+            "fonte": "openphish",
+            "fato": "não aparece no feed OpenPhish (1 URLs no momento)",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "digitalside",
+            "fato": "não consta na feed Digitalside OSINT (domínios)",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "threatfox",
+            "fato": "não consta no export recente do ThreatFox",
+            "evidencias": [
+              17
+            ]
           }
         ]
       },
@@ -300,77 +326,77 @@
             "fonte": "brasilapi_cnpj",
             "fato": "razão social: EMPRESA EXEMPLO LTDA",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "nome fantasia: EXEMPLO",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "situação: ATIVA · abertura: 2018-11-20",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "natureza jurídica: Sociedade Empresária Limitada",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "porte: MICRO EMPRESA",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "CNAE principal: Desenvolvimento de programas de computador sob encomenda",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "optante pelo Simples Nacional",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "endereço: PRAÇA DA SÉ 1 · SÉ · SÃO PAULO/SP",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "e-mail no cadastro: contato@exemplo.com.br",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "telefone no cadastro: (11) 30000000",
             "evidencias": [
-              15
+              18
             ]
           },
           {
             "fonte": "brasilapi_cnpj",
             "fato": "sócio (Sócio-Administrador): FULANA DE TAL EXEMPLO",
             "evidencias": [
-              15
+              18
             ]
           }
         ]
@@ -385,70 +411,98 @@
             "fonte": "rdap_ip",
             "fato": "bloco: TEST-NET-3",
             "evidencias": [
-              16
+              19
             ]
           },
           {
             "fonte": "rdap_ip",
             "fato": "faixa: 203.0.113.0 – 203.0.113.255",
             "evidencias": [
-              16
+              19
             ]
           },
           {
             "fonte": "rdap_ip",
             "fato": "país do registro: BR",
             "evidencias": [
-              16
+              19
             ]
           },
           {
             "fonte": "rdap_ip",
             "fato": "entidade com papel: registrant",
             "evidencias": [
-              16
+              19
             ]
           },
           {
             "fonte": "internetdb",
             "fato": "portas vistas pela Shodan: [443]",
             "evidencias": [
-              17
+              20
             ]
           },
           {
             "fonte": "internetdb",
             "fato": "software (CPE): cpe:/a:nginx:nginx",
             "evidencias": [
-              17
+              20
             ]
           },
           {
             "fonte": "internetdb",
             "fato": "hostname: exemplo.com.br",
             "evidencias": [
-              17
+              20
             ]
           },
           {
             "fonte": "ripestat_ip",
             "fato": "prefixo anunciado: 203.0.113.0/24",
             "evidencias": [
-              19
+              22
             ]
           },
           {
             "fonte": "ripestat_ip",
             "fato": "origem BGP: AS64500 — EXEMPLO-AS — documentação RFC 5398",
             "evidencias": [
-              19
+              22
             ]
           },
           {
             "fonte": "tor_saida",
             "fato": "não consta entre as 2 saídas Tor da lista oficial",
             "evidencias": [
-              20
+              23
+            ]
+          },
+          {
+            "fonte": "feodo_c2",
+            "fato": "não consta no Feodo Tracker (0 C2 na lista do momento)",
+            "evidencias": [
+              24
+            ]
+          },
+          {
+            "fonte": "sslbl_c2",
+            "fato": "não consta na SSL Blacklist (SSLBL)",
+            "evidencias": [
+              25
+            ]
+          },
+          {
+            "fonte": "digitalside",
+            "fato": "não consta na feed Digitalside OSINT (IPs)",
+            "evidencias": [
+              26
+            ]
+          },
+          {
+            "fonte": "threatfox",
+            "fato": "não consta no export recente do ThreatFox",
+            "evidencias": [
+              17
             ]
           }
         ]
@@ -458,21 +512,87 @@
         "valor": "mail.exemplo.com.br",
         "profundidade": 1,
         "investigado": true,
-        "fatos": []
+        "fatos": [
+          {
+            "fonte": "openphish",
+            "fato": "não aparece no feed OpenPhish (1 URLs no momento)",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "digitalside",
+            "fato": "não consta na feed Digitalside OSINT (domínios)",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "threatfox",
+            "fato": "não consta no export recente do ThreatFox",
+            "evidencias": [
+              17
+            ]
+          }
+        ]
       },
       "dominio:app.exemplo.com.br": {
         "tipo": "dominio",
         "valor": "app.exemplo.com.br",
         "profundidade": 1,
         "investigado": true,
-        "fatos": []
+        "fatos": [
+          {
+            "fonte": "openphish",
+            "fato": "não aparece no feed OpenPhish (1 URLs no momento)",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "digitalside",
+            "fato": "não consta na feed Digitalside OSINT (domínios)",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "threatfox",
+            "fato": "não consta no export recente do ThreatFox",
+            "evidencias": [
+              17
+            ]
+          }
+        ]
       },
       "dominio:vpn.exemplo.com.br": {
         "tipo": "dominio",
         "valor": "vpn.exemplo.com.br",
         "profundidade": 1,
         "investigado": true,
-        "fatos": []
+        "fatos": [
+          {
+            "fonte": "openphish",
+            "fato": "não aparece no feed OpenPhish (1 URLs no momento)",
+            "evidencias": [
+              15
+            ]
+          },
+          {
+            "fonte": "digitalside",
+            "fato": "não consta na feed Digitalside OSINT (domínios)",
+            "evidencias": [
+              16
+            ]
+          },
+          {
+            "fonte": "threatfox",
+            "fato": "não consta no export recente do ThreatFox",
+            "evidencias": [
+              17
+            ]
+          }
+        ]
       },
       "organizacao:empresa exemplo ltda": {
         "tipo": "organizacao",
@@ -497,14 +617,14 @@
             "fonte": "brasilapi_cep",
             "fato": "Praça da Sé · Sé · São Paulo/SP",
             "evidencias": [
-              63
+              69
             ]
           },
           {
             "fonte": "brasilapi_cep",
             "fato": "coordenadas aproximadas: -23.5503, -46.6339",
             "evidencias": [
-              63
+              69
             ]
           }
         ]
@@ -568,24 +688,24 @@
             "fonte": "ripestat_asn",
             "fato": "titular: EXEMPLO-AS — documentação RFC 5398",
             "evidencias": [
-              66,
-              67
+              72,
+              73
             ]
           },
           {
             "fonte": "ripestat_asn",
             "fato": "anunciando rotas agora",
             "evidencias": [
-              66,
-              67
+              72,
+              73
             ]
           },
           {
             "fonte": "ripestat_asn",
             "fato": "prefixos anunciados: 2 (1 IPv4, 1 IPv6)",
             "evidencias": [
-              66,
-              67
+              72,
+              73
             ]
           }
         ]

@@ -45,6 +45,10 @@
       [
         "internetdb",
         "portas vistas pela Shodan: [443, 8443]"
+      ],
+      [
+        "threatfox",
+        "⚠ consta no ThreatFox: botnet_cc / ExampleTrojan (confiança 75%, primeira vez 2026-10-05)"
       ]
     ]
   },
@@ -67,6 +71,10 @@
       [
         "internetdb",
         "portas vistas pela Shodan: [443]"
+      ],
+      [
+        "threatfox",
+        "não consta no export recente do ThreatFox"
       ]
     ]
   },
@@ -83,5 +91,5 @@
     ]
   ],
   "vinculos_sumidos": [],
-  "total_mudancas": 15
+  "total_mudancas": 17
 }

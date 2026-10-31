@@ -116,9 +116,12 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
       <a class="sec" data-fmt="graphml">GraphML</a>
       <a class="sec" data-fmt="csv">CSV</a>
       <a class="sec" data-fmt="json">JSON</a>
+      <a class="sec" id="aEspelho" target="_blank" rel="noopener">🪞 ESPELHO ↗</a>
       <span id="cVerif"></span>
     </div>
+    <div id="cRep"></div>
     <div id="cDiff"></div>
+    <div id="cTl"></div>
     <div class="grid2">
       <div>
         <svg id="grafo" role="img" aria-label="Grafo de vínculos interativo"></svg>
@@ -143,7 +146,7 @@ function el(tag,attrs={},...filhos){const e=tag.startsWith("svg:")?document.crea
 const api=(u,o)=>fetch(u,o).then(r=>r.ok?r.json():r.json().then(j=>Promise.reject(j.erro||r.status)));
 const post=(u,corpo)=>api(u,{method:"POST",headers:{"Content-Type":"application/json","X-Garimpo":"1"},body:JSON.stringify(corpo)});
 const pill=t=>el("span",{class:"pill",style:`background:${CORES[t]||"#64748b"}`,text:t});
-let atual=null,dados=null,poll=null;
+let atual=null,dados=null,poll=null,flagados=new Set();
 
 /* ---------- formulário ---------- */
 let tDet;
@@ -197,12 +200,32 @@ function render(c){
     .map(t=>el("span",{class:"chip",text:t})));
   const base="/api/casos/"+encodeURIComponent(atual);
   $("#aDossie").href=base+"/dossie";
+  $("#aEspelho").href=base+"/espelho";
   document.querySelectorAll("[data-fmt]").forEach(a=>a.href=base+"/exportar/"+a.dataset.fmt);
   $("#cVerif").textContent="";
+  const an=c.analise||{};
+  flagados=new Set(Object.keys((an.reputacao||{}).nos||{}));
+  if(an.exposicao){const e=an.exposicao;const cor=e.pontuacao>=55?"#ef4444":(e.pontuacao>=30?"#f59e0b":"#10b981");
+    $("#cChips").append(el("span",{class:"chip",style:`border-color:${cor};color:${cor}`,text:`exposição ${e.pontuacao}/100`}));}
+  $("#cRep").replaceChildren((an.reputacao&&an.reputacao.total)?repBox(an.reputacao):"");
   $("#cDiff").replaceChildren(c.diff?diffBox(c.diff):"");
+  $("#cTl").replaceChildren((an.linha_do_tempo&&an.linha_do_tempo.length)?tlBox(an.linha_do_tempo):"");
   $("#legenda").replaceChildren(...[...new Set(nos.map(n=>n.tipo))].map(t=>el("span",{style:`--c:${CORES[t]||"#64748b"}`,text:t})),
-    el("span",{style:"--c:transparent",text:"tracejado = vínculo fraco · pontilhado = fronteira"}));
+    el("span",{style:"--c:transparent",text:"tracejado = fraco · pontilhado = fronteira · anel vermelho = reputação"}));
   desenhar(c);detalhe(c.grafo.no_seed in c.grafo.nos?c.grafo.no_seed:Object.keys(c.grafo.nos)[0]);
+}
+function repBox(r){
+  const ul=el("ul",{class:"mud"});
+  for(const v of Object.values(r.nos))for(const s of v.sinais)
+    ul.append(el("li",{class:"menos"},el("b",{},pill(v.tipo),v.valor),` [${s.fonte}] ${s.fato}`));
+  return el("details",{class:"card",open:"",style:"border-color:#7f1d1d;background:#1c1012"},
+    el("summary",{style:"color:#fca5a5",text:`⚠ Reputação em listas de ameaça: ${r.total}`}),ul);
+}
+function tlBox(tl){
+  const t=el("table");
+  tl.forEach(e=>t.append(el("tr",{},el("td",{class:"e",text:e.data}),
+    el("td",{},pill(e.tipo),e.valor),el("td",{class:"f",text:e.fonte}),el("td",{text:e.fato}))));
+  return el("details",{class:"card"},el("summary",{text:`Linha do tempo (${tl.length})`}),t);
 }
 $("#aVerif").addEventListener("click",()=>{$("#cVerif").textContent="verificando…";
   api("/api/casos/"+encodeURIComponent(atual)+"/verificar").then(r=>{const s=$("#cVerif");
@@ -257,7 +280,8 @@ function desenhar(c){
     const ci=el("svg:circle",{r:d.r,fill:CORES[d.n.tipo]||"#64748b",opacity:d.n.investigado?0.95:0.55,stroke:d.n.investigado?"#0f172a":"#e2e8f0","stroke-width":1.5});
     if(!d.n.investigado)ci.setAttribute("stroke-dasharray","2 2");
     const rot=d.n.valor.length>24?d.n.valor.slice(0,22)+"…":d.n.valor;
-    gr.append(ci,el("svg:title",{text:`${d.n.tipo}: ${d.n.valor}`}));
+    if(flagados.has(d.k))gr.append(el("svg:circle",{r:d.r+4,fill:"none",stroke:"#ef4444","stroke-width":2.5}));
+    gr.append(ci,el("svg:title",{text:`${d.n.tipo}: ${d.n.valor}`+(flagados.has(d.k)?" ⚠ em lista de ameaça":"")}));
     if(d.n.investigado||N.length<=30)gr.append(el("svg:text",{"text-anchor":"middle",dy:d.r+11,text:rot}));
     let arrastando=false;
     gr.addEventListener("pointerdown",e=>{arrastando=true;gr.setPointerCapture(e.pointerId);d.fixo=true;detalhe(d.k)});

@@ -33,7 +33,9 @@ def svg_grafo(grafo: dict, largura: int = 900, altura: int = 560) -> str:
             por_prof.setdefault(n["profundidade"], []).append(k)
     maxp = max(por_prof) if por_prof else 1
     for p, grupo in por_prof.items():
-        raio = (min(cx, cy) - 40) * p / maxp
+        # (p+1)/(maxp+1): nunca divide por zero e dá anel a nós de profundidade 0
+        # que não são o seed (caso do lote, em que todos entram na camada 0).
+        raio = (min(cx, cy) - 40) * (p + 1) / (maxp + 1)
         grupo.sort(key=lambda k: (nos[k]["tipo"], k))
         for i, k in enumerate(grupo):
             a = 2 * math.pi * i / len(grupo) - math.pi / 2 + p * 0.35
@@ -104,6 +106,41 @@ def gerar_dossie(caso: dict, caso_dir: str, diff: dict | None = None) -> str:
     if diff:
         from .monitor import diff_html as _dh
         diff_html = _dh(diff)
+
+    from .analise import linha_do_tempo, reputacao, socios_cruzados
+    rep = reputacao(caso)
+    rep_html = ""
+    if rep["total"]:
+        linhas_rep = "".join(
+            f'<tr><td><span class="pill" style="background:{CORES.get(v["tipo"], "#64748b")}">{E(v["tipo"])}</span>'
+            f'{E(v["valor"])}</td><td class="fonte">{E(s["fonte"])}</td><td>{E(s["fato"])}</td>'
+            f'<td class="ev">{evid(s.get("evidencias", []))}</td></tr>'
+            for v in rep["nos"].values() for s in v["sinais"])
+        rep_html = (f'<div class="rep"><h2 style="margin-top:0">⚠ Reputação em listas de ameaça ({rep["total"]})</h2>'
+                    f'<p class="nota">Entidades deste caso que constam em feeds públicos de CTI. '
+                    f'Constar numa lista é um forte indício a confirmar — pode ser comprometimento, abuso ou C2.</p>'
+                    f'<table>{linhas_rep}</table></div>')
+
+    tl = linha_do_tempo(caso)
+    tl_html = ""
+    if tl:
+        itens = "".join(f'<tr><td class="d">{E(e["data"])}</td>'
+                        f'<td><span class="pill" style="background:{CORES.get(e["tipo"], "#64748b")}">{E(e["tipo"])}</span>'
+                        f'{E(e["valor"])}</td><td class="fonte">{E(e["fonte"])}</td><td>{E(e["fato"])}</td></tr>'
+                        for e in tl)
+        tl_html = (f'<h2>Linha do tempo ({len(tl)})</h2>'
+                   f'<p class="nota">Fatos datados em ordem cronológica — registro de domínio, certificados, snapshots, abertura de empresa.</p>'
+                   f'<table class="tl">{itens}</table>')
+
+    qsa = socios_cruzados(caso)
+    qsa_html = ""
+    if qsa:
+        itens = "".join(f'<li><b>{E(s["socio"])}</b> — sócio em {len(s["empresas"])}: '
+                        f'{E(", ".join(s["empresas"]))}</li>' for s in qsa)
+        qsa_html = (f'<h2>Sócios em comum ({len(qsa)})</h2>'
+                    f'<p class="nota">Pessoas ligadas a mais de um CNPJ deste caso (dado corporativo público da Receita, '
+                    f'já coletado — sem busca reversa por pessoa).</p><ul class="front">{itens}</ul>')
+
     caminho_rel = caso_dir
     doc = f"""<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -128,6 +165,9 @@ ul.front{{columns:2;font-size:.84rem;padding-left:18px}}ul.front li{{margin:3px 
 .aviso{{border-left:3px solid #f59e0b;background:#1c1917;padding:10px 14px;border-radius:8px;font-size:.84rem;color:#fbbf24;margin:18px 0}}
 .mud{{background:#111a2e;border:1px solid #1e293b;border-radius:12px;padding:6px 16px}}
 .mais{{color:#4ade80}}.menos{{color:#f87171}}
+.rep{{background:#1c1012;border:1px solid #7f1d1d;border-radius:14px;padding:12px 18px;margin:16px 0}}
+td.d{{white-space:nowrap;color:#60a5fa;font-family:ui-monospace,monospace;width:92px}}
+table.tl td{{font-size:.84rem}}
 footer{{color:#475569;font-size:.78rem;margin-top:28px;border-top:1px solid #1e293b;padding-top:12px}}
 </style></head><body>
 <h1>⛏️ GARIMPO <small>· dossiê de investigação passiva · DEIVOSINT</small></h1>
@@ -140,6 +180,7 @@ footer{{color:#475569;font-size:.78rem;margin-top:28px;border-top:1px solid #1e2
 <span><b>Vínculos:</b> {len(g['arestas'])}</span>
 <span><b>Requisições:</b> {caso['orcamento']['requisicoes_feitas']}/{caso['orcamento']['max_requisicoes']}</span>
 </div>
+{rep_html}
 {diff_html}
 <h2>Grafo de vínculos</h2>
 {svg_grafo(g)}
@@ -147,6 +188,8 @@ footer{{color:#475569;font-size:.78rem;margin-top:28px;border-top:1px solid #1e2
 <h2>Entidades e fatos</h2>
 <p class="nota">Cada fato traz a fonte e a(s) evidência(s) que o sustentam: <b>#n</b> abre a resposta bruta guardada; o título mostra SHA-256, status HTTP e URL.</p>
 {''.join(secoes)}
+{tl_html}
+{qsa_html}
 {front_html}
 <h2>Uso de fontes</h2><table>{uso}</table>
 <div class="aviso"><b>Cadeia de custódia:</b> respostas brutas em <code>evidencias/</code>, registradas em

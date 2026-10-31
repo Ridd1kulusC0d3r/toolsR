@@ -115,6 +115,21 @@ def main(argv=None) -> int:
     pn.add_argument("--sem-navegador", action="store_true")
     mc = sub.add_parser("mcp", help="servidor MCP (stdio) para Claude e outros clientes")
     mc.add_argument("--casos", default="casos")
+
+    lt = sub.add_parser("lote", help="enriquece vários IOCs de um arquivo num caso só")
+    lt.add_argument("arquivo", help="TXT (um por linha) ou CSV de alvos")
+    lt.add_argument("--coluna", default=None, help="coluna do CSV (nome do cabeçalho)")
+    lt.add_argument("--profundidade", type=int, default=0, help="saltos de pivô por alvo (padrão 0)")
+    lt.add_argument("--max-entidades", type=int, default=60)
+    lt.add_argument("--max-requisicoes", type=int, default=200)
+    lt.add_argument("--paralelo", type=int, default=6)
+    lt.add_argument("--caso", default=None)
+    lt.add_argument("--exportar", default="stix", help=f"formatos: {','.join(FORMATOS)} (padrão stix)")
+    lt.add_argument("--silencioso", action="store_true")
+
+    es = sub.add_parser("espelho", help="auto-auditoria OPSEC do seu próprio domínio/marca")
+    _opcoes_investigacao(es)
+
     sub.add_parser("versao", help="mostra a versão")
 
     a = p.parse_args(argv)
@@ -168,6 +183,59 @@ def main(argv=None) -> int:
     if a.cmd == "mcp":
         from .mcp import servir as servir_mcp
         return servir_mcp(a.casos)
+    if a.cmd == "lote":
+        return _rodar_lote(a)
+    if a.cmd == "espelho":
+        return _rodar_espelho(a)
     if a.cmd == "monitorar":
         return _rodar(a, diff_contra=a.contra)
     return _rodar(a)
+
+
+def _rodar_lote(args) -> int:
+    from .lote import ler_alvos, investigar_lote
+    alvos = ler_alvos(args.arquivo, args.coluna)
+    if not alvos:
+        print(f"✘ nenhum alvo lido de {args.arquivo}")
+        return 1
+    carimbo = _dt.datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    caso_dir = args.caso or os.path.join("casos", f"{carimbo}_lote_{len(alvos)}")
+    os.makedirs(caso_dir, exist_ok=True)
+    print(f"⛏️  GARIMPO {VERSAO} · LOTE · {len(alvos)} alvos de {args.arquivo}")
+    print(f"    caso: {caso_dir} · modo: PASSIVO (sempre) · paralelo: {args.paralelo}")
+    orc = Orcamento(args.max_requisicoes, args.max_entidades, args.profundidade)
+    caso = investigar_lote(alvos, orc, caso_dir, args.silencioso, paralelo=args.paralelo)
+    caminho = gerar_dossie(caso, caso_dir)
+    from .analise import reputacao
+    rep = reputacao(caso)
+    nos = caso["grafo"]["nos"]
+    inv = sum(1 for n in nos.values() if n["investigado"])
+    print(f"\n✔ {inv} entidades consultadas · {len(nos) - inv} na fronteira · "
+          f"{caso['orcamento']['requisicoes_feitas']} requisições · {caso['duracao_s']}s")
+    print(f"{'⚠' if rep['total'] else '✔'} {rep['total']} sinal(is) de reputação em listas de ameaça")
+    for fmt in [x.strip() for x in args.exportar.split(",") if x.strip()]:
+        for pth in exportar(caso, caso_dir, fmt):
+            print(f"✔ Exportado ({fmt}): {pth}")
+    print(f"✔ Dossiê: {caminho}")
+    return 0
+
+
+def _rodar_espelho(args) -> int:
+    from .espelho import gerar_relatorio
+    from .analise import exposicao
+    tipo = detectar_tipo(args.alvo)
+    caso_dir = args.caso or novo_caso_dir(args.alvo)
+    os.makedirs(caso_dir, exist_ok=True)
+    print(f"🪞 GARIMPO {VERSAO} · ESPELHO (auto-auditoria OPSEC) · alvo: {args.alvo} ({tipo})")
+    print(f"    caso: {caso_dir} · modo: PASSIVO (sempre) · rode só no SEU ativo")
+    orc = Orcamento(args.max_requisicoes, args.max_entidades, args.profundidade)
+    caso = investigar(args.alvo, orc, caso_dir, args.silencioso, paralelo=args.paralelo)
+    gerar_dossie(caso, caso_dir)
+    caminho = gerar_relatorio(caso, caso_dir)
+    exp = exposicao(caso)
+    print(f"\n✔ Exposição passiva: {exp['pontuacao']}/100 — {exp['resumo']}")
+    for c in exp["classes"]:
+        print(f"  [{'EXPOSTO' if c['exposto'] else '  ok  '}] {c['titulo']}")
+    print(f"✔ Relatório ESPELHO: {caminho}")
+    print(f"✔ Dossiê completo: {os.path.join(caso_dir, 'dossie.html')}")
+    return 0

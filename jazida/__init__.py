@@ -10,21 +10,24 @@ Módulos:
   dossie     dossiê HTML pt-BR standalone
   exportar   STIX 2.1, GraphML, CSV
   monitor    diff entre coletas
+  analise    derivados do caso: linha do tempo, reputação CTI, QSA cruzado, exposição
+  lote       enriquecimento de vários IOCs num caso só
+  espelho    auto-auditoria OPSEC (relatório de exposição passiva)
   demo       casos de demonstração offline
   mcp        servidor MCP (stdio, JSON-RPC 2.0)
   painel     painel web local (127.0.0.1)
   cli        linha de comando
 """
 
-VERSAO = "2.0.0"
+VERSAO = "2.1.0"
 
 from .custodia import Custodia  # noqa: E402
 from .deteccao import (detectar_tipo, normalizar, validar_cnpj, validar_cpf,  # noqa: E402
                        RE_DOMINIO)
 from .fontes import REGISTRO, fontes_para, por_nome, tabela_ruido  # noqa: E402
-from .motor import carregar_caso, chave_de, investigar  # noqa: E402
+from .motor import carregar_caso, chave_de, investigar, investigar_varios  # noqa: E402
 from .rede import Cliente, Orcamento  # noqa: E402
 
 __all__ = ["VERSAO", "Custodia", "detectar_tipo", "normalizar", "validar_cnpj", "validar_cpf",
            "RE_DOMINIO", "REGISTRO", "fontes_para", "por_nome", "tabela_ruido",
-           "carregar_caso", "chave_de", "investigar", "Cliente", "Orcamento"]
+           "carregar_caso", "chave_de", "investigar", "investigar_varios", "Cliente", "Orcamento"]

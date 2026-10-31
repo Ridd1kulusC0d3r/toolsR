@@ -33,8 +33,14 @@ No painel, digite um alvo **que você tem autorização para investigar** e cliq
 
 No painel: **Verificar custódia** → deve aparecer `✔ custódia ÍNTEGRA`. Para entregar, envie a pasta do caso inteira (fica em `casos/`).
 
+## ✅ Ação 6 — Audite você mesmo (ESPELHO)
+
+Dois cliques em `GARIMPO-Espelho-…` (ou `python3 garimpo.py espelho SEU-DOMINIO`). Sai um relatório do que um observador passivo vê de **você** — reputação, SPF/DMARC, superfície, vazamentos. Rode só no **seu** ativo.
+
 ---
 
-**Depois, quando quiser:** monitorar um alvo toda semana (`monitorar`), exportar para MISP/OpenCTI/Gephi/Maltego (`exportar`), ou plugar no Claude (`mcp`). Tudo explicado em **`manual/manual.html`**.
+**Depois, quando quiser:** enriquecer uma lista de IOCs do SIEM (`lote iocs.txt`), monitorar um alvo toda semana (`monitorar`), exportar para MISP/OpenCTI/Gephi/Maltego (`exportar`), ou plugar no Claude (`mcp`). Tudo explicado em **`manual/manual.html`**.
+
+**Reputação de ameaças:** se um IP, domínio ou hash constar em feed público de C2/phishing/malware, o dossiê e o painel abrem com um **banner vermelho** e o nó ganha um **anel vermelho** no grafo.
 
 > ⚖️ **Uso legal e autorizado apenas.** O GARIMPO é sempre passivo (nunca toca a infraestrutura do alvo), mas passivo não é anônimo: cada fonte vê o que você pesquisou. `python3 garimpo.py fontes` mostra a tabela de ruído.

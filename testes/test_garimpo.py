@@ -663,5 +663,245 @@ class TestCLI(Temp):
         self.assertIn("+ entidade dominio:staging", self.rodar("diff", "casos/demo-anterior", "casos/demo").stdout)
 
 
+# =========================================================== CTI (ameaças)
+from jazida.fontes import ameacas as Am  # noqa: E402
+from jazida import analise as An, espelho as Es, lote as Lt  # noqa: E402
+
+
+class TestAmeacas(unittest.TestCase):
+    def test_feodo_acerto_e_erro(self):
+        feed = json.dumps([{"ip_address": "1.2.3.4", "port": 443, "status": "online",
+                            "first_seen": "2026-01-02 00:00:00", "malware": "Dridex"}])
+        cli = ClienteFalso({Am.FEODO: feed})
+        fatos, _ = Am.feodo_c2(cli, "1.2.3.4")
+        self.assertTrue(fatos[0].startswith(Am.ALERTA))
+        self.assertIn("Dridex", fatos[0])
+        fatos2, _ = Am.feodo_c2(cli, "9.9.9.9")
+        self.assertFalse(fatos2[0].startswith(Am.ALERTA))
+
+    def test_sslbl(self):
+        csvtxt = "# comentário\nFirstseen,DstIP,DstPort\n2026-01-01 00:00:00,1.2.3.4,443\n"
+        cli = ClienteFalso({Am.SSLBL: csvtxt})
+        self.assertTrue(Am.sslbl_c2(cli, "1.2.3.4")[0][0].startswith(Am.ALERTA))
+        self.assertFalse(Am.sslbl_c2(cli, "8.8.8.8")[0][0].startswith(Am.ALERTA))
+
+    def test_openphish(self):
+        feed = "http://mau.exemplo.tld/login\nhttps://outro.tld/x\n"
+        cli = ClienteFalso({Am.OPENPHISH: feed})
+        self.assertTrue(Am.openphish(cli, "mau.exemplo.tld")[0][0].startswith(Am.ALERTA))
+        self.assertTrue(Am.openphish(cli, "http://mau.exemplo.tld/login")[0][0].startswith(Am.ALERTA))
+        self.assertFalse(Am.openphish(cli, "limpo.tld")[0][0].startswith(Am.ALERTA))
+
+    def test_digitalside_por_tipo(self):
+        cli = ClienteFalso({Am.DS_IPS: "# ips\n1.2.3.4\n", Am.DS_DOMINIOS: "# dom\nmau.tld\n",
+                            Am.DS_HASHES: "# h\n" + "a" * 64 + "\n"})
+        self.assertTrue(Am.digitalside(cli, "1.2.3.4")[0][0].startswith(Am.ALERTA))
+        self.assertTrue(Am.digitalside(cli, "mau.tld")[0][0].startswith(Am.ALERTA))
+        self.assertTrue(Am.digitalside(cli, "a" * 64)[0][0].startswith(Am.ALERTA))
+        self.assertFalse(Am.digitalside(cli, "8.8.8.8")[0][0].startswith(Am.ALERTA))
+
+    def test_threatfox_csv_real(self):
+        # formato real: linhas # de comentário, campos entre aspas e espaço após vírgula
+        csvtxt = ('# ThreatFox export\n'
+                  '"2026-01-02 10:00:00", "123", "1.2.3.4:443", "ip:port", "botnet_cc", '
+                  '"win.dridex", "Dridex", "Dridex", "75", "https://x", "tag", "0", "rep"\n')
+        cli = ClienteFalso({Am.THREATFOX: csvtxt})
+        fatos, _ = Am.threatfox(cli, "1.2.3.4")  # casa por ip sem porta
+        self.assertTrue(fatos[0].startswith(Am.ALERTA))
+        self.assertIn("Dridex", fatos[0])
+        self.assertIn("botnet_cc", fatos[0])
+        self.assertFalse(Am.threatfox(cli, "5.6.7.8")[0][0].startswith(Am.ALERTA))
+
+    def test_registradas_no_registro(self):
+        nomes = {f.nome for f in g.REGISTRO}
+        for n in Am.NOMES_AMEACA:
+            self.assertIn(n, nomes)
+
+
+# =========================================================== análise
+class TestAnalise(unittest.TestCase):
+    def _caso(self, nos, arestas=None, seed="dominio:a.com"):
+        return {"seed": "a.com", "tipo_seed": "dominio", "iniciado_utc": "2026-10-01T00:00:00+00:00",
+                "duracao_s": 0, "orcamento": {"requisicoes_feitas": 0, "max_requisicoes": 0},
+                "grafo": {"no_seed": seed, "nos": nos, "arestas": arestas or []}}
+
+    def test_timeline_ignora_cnpj_e_pega_data_com_T(self):
+        caso = self._caso({"cnpj:11.222.333/0001-81": {"tipo": "cnpj", "valor": "11.222.333/0001-81",
+                            "profundidade": 0, "investigado": True,
+                            "fatos": [{"fonte": "rdap", "fato": "evento registration: 2019-03-04T12:00:00Z"},
+                                      {"fonte": "x", "fato": "documento 11.222.333/0001-81"}]}})
+        tl = An.linha_do_tempo(caso)
+        self.assertEqual([e["data"] for e in tl], ["2019-03-04"])  # CNPJ não vira data
+
+    def test_reputacao(self):
+        caso = self._caso({"ip:1.2.3.4": {"tipo": "ip", "valor": "1.2.3.4", "profundidade": 0, "investigado": True,
+                            "fatos": [{"fonte": "threatfox", "fato": Am.ALERTA + "consta no ThreatFox: Dridex", "evidencias": [3]},
+                                      {"fonte": "rdap_ip", "fato": "bloco: X"}]}})
+        rep = An.reputacao(caso)
+        self.assertEqual(rep["total"], 1)
+        self.assertIn("ip:1.2.3.4", rep["nos"])
+        self.assertEqual(rep["nos"]["ip:1.2.3.4"]["sinais"][0]["evidencias"], [3])
+
+    def test_socios_cruzados(self):
+        nos = {"cnpj:11.111.111/0001-11": {"tipo": "cnpj", "valor": "11.111.111/0001-11", "profundidade": 0, "investigado": True, "fatos": []},
+               "cnpj:22.222.222/0001-22": {"tipo": "cnpj", "valor": "22.222.222/0001-22", "profundidade": 0, "investigado": True, "fatos": []},
+               "pessoa:fulano": {"tipo": "pessoa", "valor": "FULANO", "profundidade": 1, "investigado": True, "fatos": []}}
+        arestas = [{"de": "cnpj:11.111.111/0001-11", "para": "pessoa:fulano", "relacao": "socio_de", "confianca": 0.9},
+                   {"de": "cnpj:22.222.222/0001-22", "para": "pessoa:fulano", "relacao": "socio_de", "confianca": 0.9}]
+        cr = An.socios_cruzados(self._caso(nos, arestas))
+        self.assertEqual(len(cr), 1)
+        self.assertEqual(cr[0]["socio"], "FULANO")
+        self.assertEqual(len(cr[0]["empresas"]), 2)
+
+    def test_exposicao_sinaliza_reputacao(self):
+        caso = self._caso({"ip:1.2.3.4": {"tipo": "ip", "valor": "1.2.3.4", "profundidade": 0, "investigado": True,
+                            "fatos": [{"fonte": "feodo_c2", "fato": Am.ALERTA + "C2 Dridex"}]}},
+                          seed="ip:1.2.3.4")
+        exp = An.exposicao(caso)
+        self.assertTrue(any(c["id"] == "reputacao" and c["exposto"] for c in exp["classes"]))
+        self.assertIn("ATENÇÃO", exp["resumo"])
+
+
+# =========================================================== lote
+class TestLote(Temp):
+    def test_ler_alvos_txt(self):
+        p = os.path.join(self.dir, "a.txt")
+        _gravar(p, "exemplo.com\n# comentário\n1.2.3.4\nexemplo.com\n  8.8.8.8  \n")
+        self.assertEqual(Lt.ler_alvos(p), ["exemplo.com", "1.2.3.4", "8.8.8.8"])  # dedup, sem comentário
+
+    def test_ler_alvos_csv_coluna(self):
+        p = os.path.join(self.dir, "a.csv")
+        _gravar(p, "data,ioc,tipo\n2026-01-01,mau.tld,domain\n2026-01-02,1.2.3.4,ip\n")
+        self.assertEqual(Lt.ler_alvos(p), ["mau.tld", "1.2.3.4"])  # acha coluna 'ioc'
+        self.assertEqual(Lt.ler_alvos(p, coluna="tipo"), ["domain", "ip"])
+
+    def test_investigar_lote_um_caso(self):
+        originais = list(g.REGISTRO)
+
+        class CliFake(g.Cliente):  # não toca a rede, mas registra na custódia
+            def _buscar(self, url, accept):
+                return 200, b'{"ok": true}'
+        try:
+            g.REGISTRO.clear()
+            from jazida.fontes import Fonte
+
+            def fx(c, v):
+                c.get_json("fx", f"https://exemplo.invalid/{v}")  # gera 1 registro de custódia
+                return [f"visto {v}"], []
+            g.REGISTRO.append(Fonte("fx", ("ip", "dominio"), "passiva", "-", "-", fx))
+            caso = Lt.investigar_lote(["1.2.3.4", "a.exemplo.com", "1.2.3.4"],
+                                      g.Orcamento(50, 20, 0), self.dir, silencioso=True,
+                                      cliente_cls=lambda *a, **k: CliFake(*a, cortesia=0, **k))
+            nos = caso["grafo"]["nos"]
+            self.assertIn("ip:1.2.3.4", nos)
+            self.assertIn("dominio:a.exemplo.com", nos)
+            self.assertEqual(caso["lote"]["n_alvos"], 3)
+            self.assertEqual(caso.get("seeds")[:2], ["1.2.3.4", "a.exemplo.com"])
+            self.assertTrue(g.Custodia.verificar(self.dir)[0])
+        finally:
+            g.REGISTRO[:] = originais
+
+
+# =========================================================== espelho + demo 2.1
+class Test21Demo(Temp):
+    def test_demo_tem_reputacao_timeline_e_espelho(self):
+        Dm.rodar_demo(self.dir)
+        d = os.path.join(self.dir, "demo")
+        caso = g.carregar_caso(d)
+        rep = An.reputacao(caso)
+        self.assertEqual(rep["total"], 1)  # ThreatFox pega o IP na semana 2
+        self.assertIn("threatfox", list(rep["nos"].values())[0]["sinais"][0]["fonte"])
+        tl = An.linha_do_tempo(caso)
+        self.assertTrue(tl and tl[0]["data"] < tl[-1]["data"])
+        self.assertFalse(any(e["data"].startswith("0001") for e in tl))  # sem falso positivo de CNPJ
+        caminho = Es.gerar_relatorio(caso, d)
+        html = _ler(caminho)
+        self.assertIn("ESPELHO", html)
+        self.assertIn("Reputação em listas de ameaça", html)
+        # dossiê 2.1 traz banner de reputação e linha do tempo
+        dossie = _ler(os.path.join(d, "dossie.html"))
+        self.assertIn("Reputação em listas de ameaça", dossie)
+        self.assertIn("Linha do tempo", dossie)
+
+    def test_diff_mostra_reputacao_nova(self):
+        Dm.rodar_demo(self.dir)
+        diff = json.loads(_ler(os.path.join(self.dir, "demo", "diff.json")))
+        texto = M.relatorio_texto(diff)
+        self.assertIn("ThreatFox", texto)  # a reputação surgiu na semana 2
+
+
+# =========================================================== MCP 2.1
+class TestMCP21(Temp):
+    def test_espelho_e_reputacao(self):
+        Dm.rodar_demo(self.dir)
+        s = Servidor(self.dir)
+        rep = s.chamar("garimpo_reputacao", {"caso": "demo"})
+        self.assertIn("ThreatFox", rep)
+        esp = s.chamar("garimpo_espelho", {"caso": "demo"})
+        self.assertIn("Exposição passiva", esp)
+        self.assertIn("EXPOSTO", esp)
+        self.assertTrue(os.path.isfile(os.path.join(self.dir, "demo", "espelho.html")))
+        # garimpo_caso agora destaca reputação no topo
+        self.assertIn("REPUTAÇÃO", s.chamar("garimpo_caso", {"caso": "demo"}))
+
+
+# =========================================================== painel 2.1
+class TestPainel21(Temp):
+    def setUp(self):
+        super().setUp()
+        Dm.rodar_demo(self.dir)
+        self.srv = criar_servidor(self.dir, 0)
+        self.porta = self.srv.estado.porta
+        threading.Thread(target=self.srv.serve_forever, daemon=True).start()
+        self.op = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+    def tearDown(self):
+        self.srv.shutdown()
+        self.srv.server_close()
+        super().tearDown()
+
+    def _get(self, caminho):
+        r = urllib.request.Request(f"http://127.0.0.1:{self.porta}{caminho}", headers={"Host": f"127.0.0.1:{self.porta}"})
+        with self.op.open(r, timeout=10) as resp:
+            return resp.status, resp.read(), dict(resp.headers)
+
+    def test_analise_no_payload_e_espelho(self):
+        st, corpo, _ = self._get("/api/casos/demo")
+        caso = json.loads(corpo)
+        self.assertEqual(caso["analise"]["reputacao"]["total"], 1)
+        self.assertTrue(caso["analise"]["linha_do_tempo"])
+        self.assertIn("pontuacao", caso["analise"]["exposicao"])
+        st, corpo, cab = self._get("/api/casos/demo/espelho")
+        self.assertEqual(st, 200)
+        self.assertIn(b"ESPELHO", corpo)
+
+
+# =========================================================== CLI 2.1
+class TestCLI21(Temp):
+    def rodar(self, *args, **kw):
+        return subprocess.run([sys.executable, os.path.join(RAIZ, "garimpo.py"), *args], capture_output=True,
+                              text=True, timeout=120, cwd=self.dir, **kw)
+
+    def test_versao_2_1_e_fontes_cti(self):
+        self.assertIn("GARIMPO 2.1", self.rodar("versao").stdout)
+        saida = self.rodar("fontes").stdout
+        for n in ("feodo_c2", "threatfox", "openphish", "digitalside", "sslbl_c2"):
+            self.assertIn(n, saida)
+
+    def test_lote_offline(self):
+        alvo = os.path.join(self.dir, "iocs.txt")
+        _gravar(alvo, "529.982.247-25\n(31) 99999-8888\n")  # só offline: zero rede
+        p = self.rodar("lote", alvo, "--silencioso")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("sinal(is) de reputação", p.stdout)
+
+    def test_espelho_gera_relatorio(self):
+        # CPF: investigação sem rede, mas o relatório ESPELHO é gerado
+        p = self.rodar("espelho", "529.982.247-25", "--silencioso")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertIn("Exposição passiva", p.stdout)
+        self.assertIn("Relatório ESPELHO", p.stdout)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,0 +1,62 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>ESPELHO — exposição de exemplo.com.br</title>
+<style>
+:root{color-scheme:dark}
+body{font-family:system-ui,Segoe UI,Roboto,sans-serif;background:#0b1220;color:#e2e8f0;max-width:900px;margin:0 auto;padding:24px 16px}
+h1{font-size:1.5rem}h1 small{color:#60a5fa;font-weight:400}h2{font-size:1.1rem;margin-top:26px}
+.placar{background:#111a2e;border:1px solid #1e293b;border-radius:14px;padding:18px 20px;margin:14px 0}
+.placar .n{font-size:2.2rem;font-weight:800}
+.resumo{color:#fbbf24;margin-top:8px}
+.classe{background:#111a2e;border:1px solid #1e293b;border-radius:12px;padding:12px 16px;margin:10px 0}
+.ch{display:flex;align-items:center;gap:8px}
+.bolha{width:11px;height:11px;border-radius:50%;display:inline-block}
+.tag{margin-left:auto;font-size:.68rem;text-transform:uppercase;color:#94a3b8;border:1px solid #1e293b;border-radius:999px;padding:1px 9px}
+ul{margin:8px 0;font-size:.88rem}li{margin:2px 0;overflow-wrap:anywhere}
+.rec{color:#93c5fd;font-size:.86rem;margin:6px 0 0}
+table{width:100%;border-collapse:collapse;font-size:.84rem;margin-top:8px}
+td{padding:6px 8px;border-top:1px solid #1e293b;vertical-align:top;overflow-wrap:anywhere}
+td.d{white-space:nowrap;color:#60a5fa;font-family:ui-monospace,monospace}td.f{color:#94a3b8;font-family:ui-monospace,monospace;white-space:nowrap}
+.aviso{border-left:3px solid #f59e0b;background:#1c1917;padding:10px 14px;border-radius:8px;font-size:.84rem;color:#fbbf24;margin:18px 0}
+footer{color:#475569;font-size:.78rem;margin-top:28px;border-top:1px solid #1e293b;padding-top:12px}
+</style></head><body>
+<h1>🪞 ESPELHO <small>· o que um observador passivo vê de você · DEIVOSINT</small></h1>
+<div class="placar">
+<div><b>Alvo:</b> exemplo.com.br · <b>coletado (UTC):</b> 2026-10-08T09:00:00</div>
+<div class="n">65/100</div>
+<div>exposição passiva observada (mais alto = mais à mostra)</div>
+<div style="background:#0f172a;border:1px solid #1e293b;border-radius:999px;height:16px;overflow:hidden"><div style="width:65%;height:100%;background:#ef4444"></div></div>
+<div class="resumo">ATENÇÃO: há sinal em lista de ameaça — verifique antes de tudo.</div>
+</div>
+<h2>Classes de exposição</h2>
+
+<div class="classe">
+<div class="ch"><span class="bolha" style="background:#f59e0b"></span><b>Reputação em listas de ameaça</b>
+<span class="tag">EXPOSTO</span></div>
+<ul><li>consta no ThreatFox: botnet_cc / ExampleTrojan (confiança 75%, primeira vez 2026-10-05)</li></ul>
+<p class="rec">→ Se algo seu consta em lista de C2/phishing, trate como incidente: pode ser comprometimento ou abuso de marca.</p></div>
+<div class="classe">
+<div class="ch"><span class="bolha" style="background:#10b981"></span><b>Autenticação de e-mail (anti-spoofing)</b>
+<span class="tag">ok</span></div>
+<ul><li>SPF publicado</li><li>DMARC publicado</li></ul>
+<p class="rec">→ SPF e DMARC presentes. Confira se o DMARC está em p=quarantine ou reject.</p></div>
+<div class="classe">
+<div class="ch"><span class="bolha" style="background:#f59e0b"></span><b>Superfície exposta (subdomínios, portas, CVEs)</b>
+<span class="tag">EXPOSTO</span></div>
+<ul><li>3 subdomínio(s) expostos em Certificate Transparency</li><li>portas vistas pela Shodan: [443, 8443]</li></ul>
+<p class="rec">→ Revise se subdomínios de homologação/dev deviam estar públicos; trate CVEs indexadas como prioridade.</p></div>
+<div class="classe">
+<div class="ch"><span class="bolha" style="background:#10b981"></span><b>Vazamento de identidade (e-mails, commits)</b>
+<span class="tag">ok</span></div>
+<ul><li>e-mails no grafo: 1</li></ul>
+<p class="rec">→ Nenhum e-mail exposto em commit público observado.</p></div>
+<div class="classe">
+<div class="ch"><span class="bolha" style="background:#f59e0b"></span><b>Pegada histórica (Internet Archive)</b>
+<span class="tag">EXPOSTO</span></div>
+<ul><li>presente no Internet Archive</li></ul>
+<p class="rec">→ Conteúdo antigo pode revelar tecnologias, e-mails e caminhos já removidos. Vale revisar o que está arquivado.</p></div>
+<h2>Linha do tempo da pegada</h2><table class='tl'><tr><td class="d">2018-11-20</td><td>11.222.333/0001-81</td><td class="f">brasilapi_cnpj</td><td>situação: ATIVA · abertura: 2018-11-20</td></tr><tr><td class="d">2019-03-04</td><td>exemplo.com.br</td><td class="f">rdap_dominio</td><td>evento registration: 2019-03-04T12:00:00Z</td></tr><tr><td class="d">2019-03-12</td><td>exemplo.com.br</td><td class="f">wayback</td><td>primeiro snapshot no Internet Archive: 2019-03-12</td></tr><tr><td class="d">2026-09-30</td><td>exemplo.com.br</td><td class="f">urlscan</td><td>varredura pública 2026-09-30: https://exemplo.com.br/ · IP 203.0.113.10 · EXEMPLO-AS · servidor nginx</td></tr><tr><td class="d">2026-10-05</td><td>203.0.113.10</td><td class="f">threatfox</td><td>⚠ consta no ThreatFox: botnet_cc / ExampleTrojan (confiança 75%, primeira vez 2026-10-05)</td></tr><tr><td class="d">2026-10-07</td><td>exemplo.com.br</td><td class="f">wayback</td><td>último snapshot no Internet Archive: 2026-10-07</td></tr><tr><td class="d">2027-03-04</td><td>exemplo.com.br</td><td class="f">rdap_dominio</td><td>evento expiration: 2027-03-04T12:00:00Z</td></tr></table>
+<div class="aviso"><b>Como ler:</b> isto é um retrato do que está público e visível passivamente — não um teste de invasão nem um veredito de risco. "EXPOSTO" quer dizer "observável de fora", não "vulnerável". Use para priorizar higiene de OPSEC. Coleta 100% passiva; evidências em <code>evidencias/</code>, verificáveis com <code>python3 garimpo.py verificar demo</code>.</div>
+<footer>GARIMPO 2.1.0 · modo ESPELHO · família DEIVOSINT · uso legal e autorizado apenas (rode no seu próprio ativo)</footer>
+</body></html>

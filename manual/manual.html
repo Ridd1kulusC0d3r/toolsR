@@ -78,14 +78,14 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <body>
 <nav><div class="wrap2">
 <a href="#oque">O que é</a><a href="#instalacao">Instalação</a><a href="#funciona">Como funciona</a>
-<a href="#uso">Uso guiado</a><a href="#painel">Painel</a><a href="#relatorios">Relatórios</a><a href="#monitorar">Monitorar</a><a href="#exportar">Exportar</a><a href="#mcp">MCP</a><a href="#custodia">Custódia</a><a href="#fontes">Fontes</a>
+<a href="#uso">Uso guiado</a><a href="#painel">Painel</a><a href="#cti">Reputação CTI</a><a href="#relatorios">Relatórios</a><a href="#lote">Lote</a><a href="#espelho">ESPELHO</a><a href="#monitorar">Monitorar</a><a href="#exportar">Exportar</a><a href="#mcp">MCP</a><a href="#custodia">Custódia</a><a href="#fontes">Fontes</a>
 <a href="#problemas">Problemas</a><a href="#glossario">Glossário</a><a href="#tecnica">Seção técnica</a>
 </div></nav>
 <div class="wrap">
 
 <header>
 <h1>⛏️ GARIMPO <small>· manual ilustrado · família DEIVOSINT</small></h1>
-<p class="sub">Versão 2.0.0 · motor de pivô OSINT passivo · 100% Python padrão · sem chaves de API · 28 fontes · painel web · servidor MCP · STIX 2.1 · monitoramento · cadeia de custódia forense · dossiê em português</p>
+<p class="sub">Versão 2.1.0 · motor de pivô OSINT passivo · 100% Python padrão · sem chaves de API · 33 fontes (incl. reputação de ameaças CTI) · painel web · servidor MCP · STIX 2.1 · monitoramento · enriquecimento em lote · modo ESPELHO (auto-auditoria) · linha do tempo · cadeia de custódia forense · dossiê em português</p>
 </header>
 
 <!-- ==================== O QUE É ==================== -->
@@ -99,6 +99,14 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <li><b>Guarda cada resposta bruta com lacre digital</b> (hash SHA-256 encadeado) — se alguém alterar um byte depois, o lacre denuncia;</li>
 <li><b>Entrega um dossiê em HTML</b>, em português, que abre em qualquer navegador, sem internet.</li>
 </ol>
+<p><b>Novidades da 2.1:</b></p>
+<ul>
+<li><b>Reputação de ameaças (CTI)</b> — cruza IPs, domínios e hashes com feeds públicos de C2/phishing/malware (abuse.ch, OpenPhish, Digitalside). "Este IP tem a porta 443" vira "este IP é C2 conhecido". <span class="novo">NOVO</span></li>
+<li><b>Modo ESPELHO</b> — roda no SEU domínio e responde "o que um observador passivo vê de mim?", em classes de exposição com recomendações. <span class="novo">NOVO</span></li>
+<li><b>Enriquecimento em lote</b> — joga uma lista de IOCs (do SIEM) e enriquece todos num caso só, com um STIX consolidado. <span class="novo">NOVO</span></li>
+<li><b>Linha do tempo</b> — todos os fatos datados em ordem cronológica, no dossiê e no painel. <span class="novo">NOVO</span></li>
+<li><b>Sócios em comum</b> — quando mais de um CNPJ do caso compartilha um sócio (dado corporativo público). <span class="novo">NOVO</span></li>
+</ul>
 <p><b>Novo na 2.0:</b></p>
 <ul>
 <li><b>Painel no navegador</b> — investigue, explore o grafo arrastando os nós e abra cada evidência, sem terminal; <span class="novo">NOVO</span></li>
@@ -137,7 +145,7 @@ kbd{background:#16233f;border:1px solid var(--borda);border-radius:5px;padding:1
 <div class="passo"><div class="num">2</div><div>Digite <code>python3 --version</code>. Qualquer 3.9+ serve. (Faltando: <code>sudo apt install python3</code> ou equivalente da sua distro.)</div></div>
 <div class="passo"><div class="num">3</div><div>Entre na pasta do GARIMPO: <code>cd caminho/para/garimpo</code>.</div></div>
 <div class="passo"><div class="num">4</div><div>Rode a demonstração: <code>./lancadores/garimpo-demo.sh</code> (ou <code>python3 garimpo.py demo</code>). O dossiê abre no navegador. ✔</div></div>
-<div class="ok">Para o painel: <code>./lancadores/garimpo-painel.sh</code> (ou <code>python3 garimpo.py painel</code>).</div>
+<div class="ok">Para o painel: <code>./lancadores/garimpo-painel.sh</code> (ou <code>python3 garimpo.py painel</code>). Para auditar o seu próprio domínio: <code>./lancadores/garimpo-espelho.sh</code>.</div>
 </div>
 
 <div class="painel mac">
@@ -426,7 +434,9 @@ python3 garimpo.py investigar https://site.com/pag   # URL → domínio + snapsh
 python3 garimpo.py investigar "(31) 99999-8888"      # telefone BR → DDD/UF/tipo, só offline
 python3 garimpo.py investigar 30130-110              # CEP → logradouro e coordenadas (BrasilAPI)
 python3 garimpo.py investigar AS28573                # ASN → titular e prefixos anunciados (RIPEstat)
-python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conhecido? (CIRCL hashlookup)</code></pre>
+python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conhecido? (CIRCL) + reputação (ThreatFox/Digitalside)
+python3 garimpo.py espelho SEU-DOMINIO.com.br         # auto-auditoria OPSEC (rode no SEU ativo)
+python3 garimpo.py lote iocs.txt --exportar stix      # enriquece uma lista de IOCs num caso só</code></pre>
 </div>
 
 <!-- ==================== PAINEL ==================== -->
@@ -457,8 +467,24 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 <div class="aviso">🔒 O painel só aceita conexões do próprio computador (127.0.0.1) e recusa pedidos de outros sites (proteção contra CSRF e DNS rebinding). Para encerrar, feche a janela do terminal/lançador.</div>
 </div>
 
+<!-- ==================== CTI ==================== -->
+<h2 id="cti">6 · Reputação de ameaças (CTI) <span class="novo">NOVO</span></h2>
+<div class="card">
+<p>Toda vez que o GARIMPO vê um IP, domínio ou hash, ele compara com <b>feeds públicos de inteligência de ameaças</b>, sem chave nenhuma. Se algo bate, o dossiê e o painel abrem com um <b>banner vermelho de reputação</b> e o nó ganha um <b>anel vermelho</b> no grafo.</p>
+<table>
+<tr><th>Fonte</th><th>O que acusa</th><th>Tipos</th></tr>
+<tr><td><code>feodo_c2</code></td><td>C2 de botnets (Dridex, Emotet, QakBot…) — Feodo Tracker</td><td>IP</td></tr>
+<tr><td><code>sslbl_c2</code></td><td>C2 por certificado TLS malicioso — SSL Blacklist</td><td>IP</td></tr>
+<tr><td><code>openphish</code></td><td>URL de phishing no feed comunitário OpenPhish</td><td>domínio, URL</td></tr>
+<tr><td><code>digitalside</code></td><td>IOC malicioso recente — Digitalside OSINT</td><td>domínio, IP, hash</td></tr>
+<tr><td><code>threatfox</code></td><td>IOC com <b>família de malware</b> e confiança — ThreatFox</td><td>IP, domínio, hash, URL</td></tr>
+</table>
+<p>Cada feed é <b>baixado uma vez por investigação</b> (o cliente cacheia) e comparado localmente — igual à lista do Tor. Constar numa lista é um <b>forte indício a confirmar</b>, nunca um veredito: pode ser comprometimento, abuso de marca, ou um falso positivo do feed.</p>
+<div class="aviso"><b>Sobre o "keyless":</b> o abuse.ch passou a exigir uma Auth-Key (conta gratuita) em vários endpoints de <i>API</i>. O GARIMPO usa só <b>feeds/listas de download público</b>. Se algum passar a exigir chave, a requisição recebe 403, fica registrada na custódia e a fonte simplesmente não acusa nada — nunca derruba a investigação. Confirme a disponibilidade na sua máquina.</div>
+</div>
+
 <!-- ==================== RELATÓRIOS ==================== -->
-<h2 id="relatorios">6 · Geração e leitura de relatórios</h2>
+<h2 id="relatorios">7 · Geração e leitura de relatórios</h2>
 <div class="card">
 <p>Todo caso gera automaticamente, na pasta do caso:</p>
 <table>
@@ -469,7 +495,9 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 <tr><td><code>evidencias/</code></td><td>A resposta bruta de cada requisição, byte a byte, como chegou.</td></tr>
 <tr><td><code>diff.json</code></td><td>Só em monitoramento: o que mudou desde a coleta anterior.</td></tr>
 <tr><td><code>exportacoes/</code></td><td>Só se você exportar: STIX 2.1, GraphML, CSV, JSON.</td></tr>
+<tr><td><code>espelho.html</code></td><td>Só no modo ESPELHO: o relatório de exposição.</td></tr>
 </table>
+<p class="nota">Além do grafo, o dossiê 2.1 traz: <b>banner de reputação</b> (se algo consta em lista de ameaça), <b>linha do tempo</b> dos fatos datados, e <b>sócios em comum</b> quando mais de um CNPJ compartilha um sócio.</p>
 <div class="anot" style="max-width:700px">
 <img src="img/dossie.png" alt="Topo do dossiê da demonstração: métricas, mudanças desde a coleta anterior e grafo de vínculos" loading="lazy">
 <span class="mark" style="left:4%;top:7%">1</span>
@@ -482,8 +510,42 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 <div class="ok">💡 Para entregar a alguém: envie a <b>pasta do caso inteira</b>. O dossiê abre offline e a pessoa pode verificar a custódia na máquina dela.</div>
 </div>
 
+<!-- ==================== LOTE ==================== -->
+<h2 id="lote">8 · Enriquecimento em lote <span class="novo">NOVO</span></h2>
+<div class="card">
+<p><b>Ação única:</b> uma lista de IOCs (um por linha, ou uma coluna de CSV — o export típico de um SIEM) vira um caso só.</p>
+<pre><code>python3 garimpo.py lote iocs.txt --exportar stix
+python3 garimpo.py lote feed.csv --coluna ioc --max-requisicoes 300</code></pre>
+<p>Todos os alvos entram juntos; o GARIMPO enriquece cada um passivamente (profundidade 0 por padrão), cruza com a reputação CTI e consolida tudo num <b>único dossiê</b> e um <b>STIX único</b>. O resumo no fim diz quantos sinais de ameaça apareceram.</p>
+<table>
+<tr><th>Opção</th><th>Padrão</th><th>O quê</th></tr>
+<tr><td><code>--coluna</code></td><td>auto</td><td>nome da coluna do CSV (senão detecta <code>ioc</code>/<code>indicator</code>/<code>value</code> ou usa a 1ª)</td></tr>
+<tr><td><code>--profundidade</code></td><td>0</td><td>saltos de pivô por alvo (0 = só enriquece, não pivota)</td></tr>
+<tr><td><code>--max-requisicoes</code></td><td>200</td><td>teto duro compartilhado por todos os alvos</td></tr>
+<tr><td><code>--exportar</code></td><td>stix</td><td>formatos ao terminar (stix, graphml, csv, json)</td></tr>
+</table>
+</div>
+
+<!-- ==================== ESPELHO ==================== -->
+<h2 id="espelho">9 · Modo ESPELHO — auto-auditoria OPSEC <span class="novo">NOVO</span></h2>
+<div class="card">
+<p><b>Ação única:</b> dois cliques em <code>GARIMPO-Espelho-…</code> (ou <code>python3 garimpo.py espelho SEU-DOMINIO</code>). Mesma coleta passiva, mas o relatório é <b>invertido</b>: responde "o que um observador passivo vê de VOCÊ", em classes defensivas, com recomendações. É o inverso de investigar o outro — rode só no <b>seu</b> ativo (ou de quem te autorizou).</p>
+<div class="anot" style="max-width:720px">
+<img src="img/espelho.png" alt="Relatório ESPELHO: placar de exposição, classes (reputação, autenticação de e-mail, superfície, vazamento, histórico) e linha do tempo" loading="lazy">
+<span class="mark" style="left:6%;top:9%">1</span>
+<span class="mark" style="left:6%;top:24%">2</span>
+<span class="mark" style="left:90%;top:24.5%">3</span>
+<span class="mark" style="left:6%;top:62%">4</span>
+</div>
+<div class="legmark"><span class="mark">1</span><span><b>Placar 0–100</b>: quanto da exposição possível está à mostra passivamente (mais alto = mais visível). Não é nota de risco.</span></div>
+<div class="legmark"><span class="mark">2</span><span>Classes de exposição: <b>reputação</b> (ameaça), <b>autenticação de e-mail</b> (SPF/DMARC), <b>superfície</b> (subdomínios, portas, CVEs), <b>vazamento</b> (e-mails em commits) e <b>histórico</b> (Internet Archive).</span></div>
+<div class="legmark"><span class="mark">3</span><span>Cada classe diz se está <b>EXPOSTO</b> ou <b>ok</b>, lista os achados e dá uma <b>recomendação</b> defensiva.</span></div>
+<div class="legmark"><span class="mark">4</span><span>Linha do tempo da sua pegada: quando o domínio foi registrado, certificados, snapshots, abertura da empresa.</span></div>
+<div class="aviso"><b>Como ler:</b> "EXPOSTO" quer dizer "observável de fora", não "vulnerável". É um retrato de higiene de OPSEC, não um teste de invasão. Coleta 100% passiva, com a mesma custódia verificável.</div>
+</div>
+
 <!-- ==================== MONITORAR ==================== -->
-<h2 id="monitorar">7 · Monitoramento: o que mudou? <span class="novo">NOVO</span></h2>
+<h2 id="monitorar">10 · Monitoramento: o que mudou? <span class="novo">NOVO</span></h2>
 <div class="card">
 <p><b>Ação única:</b> repita a investigação apontando para a coleta anterior.</p>
 <pre><code>python3 garimpo.py monitorar exemplo.com.br --contra casos/2026-10-01_090000_exemplo.com.br</code></pre>
@@ -502,7 +564,7 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 </div>
 
 <!-- ==================== EXPORTAR ==================== -->
-<h2 id="exportar">8 · Exportações <span class="novo">NOVO</span></h2>
+<h2 id="exportar">11 · Exportações <span class="novo">NOVO</span></h2>
 <div class="card">
 <pre><code>python3 garimpo.py exportar casos/MEU-CASO stix graphml csv</code></pre>
 <table>
@@ -516,7 +578,7 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 </div>
 
 <!-- ==================== MCP ==================== -->
-<h2 id="mcp">9 · Usar com o Claude (servidor MCP) <span class="novo">NOVO</span></h2>
+<h2 id="mcp">12 · Usar com o Claude (servidor MCP) <span class="novo">NOVO</span></h2>
 <div class="card">
 <p>MCP é o padrão que deixa assistentes de IA usarem ferramentas. Com ele, você pede em português ("investiga o domínio X e me diz quem é o titular") e o Claude chama o GARIMPO — e cita as evidências.</p>
 <h3>Claude Desktop</h3>
@@ -538,7 +600,7 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 </div>
 
 <!-- ==================== CUSTÓDIA ==================== -->
-<h2 id="custodia">10 · Cadeia de custódia (o lacre digital)</h2>
+<h2 id="custodia">13 · Cadeia de custódia (o lacre digital)</h2>
 <div class="card">
 <figure class="svgbox" style="margin-top:0">
 <svg viewBox="0 0 900 170" xmlns="http://www.w3.org/2000/svg" style="width:100%">
@@ -578,18 +640,18 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 </div>
 
 <!-- ==================== FONTES ==================== -->
-<h2 id="fontes">11 · As 28 fontes e a tabela de ruído</h2>
+<h2 id="fontes">14 · As 33 fontes e a tabela de ruído</h2>
 <div class="card">
 <p>Gerada do próprio código (é o que <code>python3 garimpo.py fontes</code> imprime). Nenhuma toca a infraestrutura do alvo; todas são keyless.</p>
 <div style="overflow-x:auto"><table>
 <tr><th>Fonte</th><th>Tipos</th><th>Nível</th><th>Envia para</th><th>O quê</th></tr>
-<tr><td><code>rdap_dominio</code></td><td>dominio</td><td>passiva</td><td>rdap.registro.br (.br) / rdap.org</td><td>1 requisição ao servidor RDAP do registro — nunca ao alvo</td></tr><tr><td><code>dns</code></td><td>dominio</td><td>passiva*</td><td>dns.google (DoH)</td><td>A/AAAA/MX/NS/TXT/SOA/CAA/DMARC via resolvedor público</td></tr><tr><td><code>crtsh</code></td><td>dominio</td><td>passiva</td><td>crt.sh</td><td>lê o índice público de Certificate Transparency</td></tr><tr><td><code>certspotter</code></td><td>dominio</td><td>passiva</td><td>api.certspotter.com</td><td>lê emissões de certificados já registradas (alternativa ao crt.sh)</td></tr><tr><td><code>wayback</code></td><td>dominio</td><td>passiva</td><td>web.archive.org (CDX)</td><td>lê o índice do Internet Archive</td></tr><tr><td><code>urlscan</code></td><td>dominio</td><td>passiva</td><td>urlscan.io (busca pública)</td><td>lê varreduras que terceiros JÁ fizeram; não submete nada</td></tr><tr><td><code>rdap_ip</code></td><td>ip</td><td>passiva</td><td>rdap.org → RIR responsável</td><td>dono do bloco, país e contatos do registro regional</td></tr><tr><td><code>internetdb</code></td><td>ip</td><td>passiva</td><td>internetdb.shodan.io</td><td>lê o índice EXISTENTE da Shodan; não dispara scan</td></tr><tr><td><code>ptr</code></td><td>ip</td><td>passiva*</td><td>dns.google (DoH)</td><td>DNS reverso (PTR)</td></tr><tr><td><code>ripestat_ip</code></td><td>ip</td><td>passiva</td><td>stat.ripe.net</td><td>prefixo anunciado e ASN de origem (dados de roteamento BGP)</td></tr><tr><td><code>ripestat_asn</code></td><td>asn</td><td>passiva</td><td>stat.ripe.net</td><td>dono do sistema autônomo e quantidade de prefixos anunciados</td></tr><tr><td><code>tor_saida</code></td><td>ip</td><td>passiva</td><td>check.torproject.org</td><td>baixa UMA vez por investigação a lista pública de saídas Tor e compara localmente</td></tr><tr><td><code>email_local</code></td><td>email</td><td>offline</td><td>nenhum</td><td>separa domínio e parte local do e-mail</td></tr><tr><td><code>gravatar</code></td><td>email</td><td>passiva</td><td>gravatar.com</td><td>1 requisição com o hash MD5 do e-mail (o dono não é notificado)</td></tr><tr><td><code>pgp</code></td><td>email</td><td>passiva</td><td>keys.openpgp.org</td><td>procura chave pública publicada (só e-mails verificados aparecem)</td></tr><tr><td><code>github</code></td><td>username</td><td>passiva</td><td>api.github.com</td><td>perfil público (60 req/h sem token)</td></tr><tr><td><code>github_commits</code></td><td>username</td><td>passiva</td><td>api.github.com (eventos públicos)</td><td>e-mails de autor em commits públicos recentes</td></tr><tr><td><code>keybase</code></td><td>username</td><td>passiva</td><td>keybase.io</td><td>contas e domínios PROVADOS criptograficamente pelo titular</td></tr><tr><td><code>hackernews</code></td><td>username</td><td>passiva</td><td>hacker-news.firebaseio.com</td><td>perfil público do Hacker News (API oficial)</td></tr><tr><td><code>brasilapi_cnpj</code></td><td>cnpj</td><td>passiva</td><td>brasilapi.com.br</td><td>dados públicos da Receita Federal (QSA, CNAE, endereço)</td></tr><tr><td><code>brasilapi_cep</code></td><td>cep</td><td>passiva</td><td>brasilapi.com.br</td><td>logradouro e coordenadas do CEP (Correios e bases abertas)</td></tr><tr><td><code>cpf_offline</code></td><td>cpf</td><td>offline</td><td>nenhum</td><td>SÓ valida dígitos e região fiscal — CPF nunca é consultado nem pivotado</td></tr><tr><td><code>telefone_offline</code></td><td>telefone</td><td>offline</td><td>nenhum</td><td>país, DDD/UF e tipo de linha por regra de numeração</td></tr><tr><td><code>documento_invalido</code></td><td>documento_invalido</td><td>offline</td><td>nenhum</td><td>formato de CPF/CNPJ com DV errado — nada é consultado</td></tr><tr><td><code>url_host</code></td><td>url</td><td>offline</td><td>nenhum</td><td>extrai o host da URL</td></tr><tr><td><code>wayback_url</code></td><td>url</td><td>passiva</td><td>archive.org (availability API)</td><td>snapshot mais próximo da URL no Internet Archive</td></tr><tr><td><code>circl_hashlookup</code></td><td>hash</td><td>passiva</td><td>hashlookup.circl.lu</td><td>o arquivo é conhecido (NSRL e outras bases de software legítimo)?</td></tr><tr><td><code>nota_pessoa</code></td><td>pessoa, organizacao</td><td>offline</td><td>nenhum</td><td>registra o nome no grafo; pivô por nome exige buscador (fora do modo keyless)</td></tr>
+<tr><td><code>rdap_dominio</code></td><td>dominio</td><td>passiva</td><td>rdap.registro.br (.br) / rdap.org</td><td>1 requisição ao servidor RDAP do registro — nunca ao alvo</td></tr><tr><td><code>dns</code></td><td>dominio</td><td>passiva*</td><td>dns.google (DoH)</td><td>A/AAAA/MX/NS/TXT/SOA/CAA/DMARC via resolvedor público</td></tr><tr><td><code>crtsh</code></td><td>dominio</td><td>passiva</td><td>crt.sh</td><td>lê o índice público de Certificate Transparency</td></tr><tr><td><code>certspotter</code></td><td>dominio</td><td>passiva</td><td>api.certspotter.com</td><td>lê emissões de certificados já registradas (alternativa ao crt.sh)</td></tr><tr><td><code>wayback</code></td><td>dominio</td><td>passiva</td><td>web.archive.org (CDX)</td><td>lê o índice do Internet Archive</td></tr><tr><td><code>urlscan</code></td><td>dominio</td><td>passiva</td><td>urlscan.io (busca pública)</td><td>lê varreduras que terceiros JÁ fizeram; não submete nada</td></tr><tr><td><code>rdap_ip</code></td><td>ip</td><td>passiva</td><td>rdap.org → RIR responsável</td><td>dono do bloco, país e contatos do registro regional</td></tr><tr><td><code>internetdb</code></td><td>ip</td><td>passiva</td><td>internetdb.shodan.io</td><td>lê o índice EXISTENTE da Shodan; não dispara scan</td></tr><tr><td><code>ptr</code></td><td>ip</td><td>passiva*</td><td>dns.google (DoH)</td><td>DNS reverso (PTR)</td></tr><tr><td><code>ripestat_ip</code></td><td>ip</td><td>passiva</td><td>stat.ripe.net</td><td>prefixo anunciado e ASN de origem (dados de roteamento BGP)</td></tr><tr><td><code>ripestat_asn</code></td><td>asn</td><td>passiva</td><td>stat.ripe.net</td><td>dono do sistema autônomo e quantidade de prefixos anunciados</td></tr><tr><td><code>tor_saida</code></td><td>ip</td><td>passiva</td><td>check.torproject.org</td><td>baixa UMA vez por investigação a lista pública de saídas Tor e compara localmente</td></tr><tr><td><code>email_local</code></td><td>email</td><td>offline</td><td>nenhum</td><td>separa domínio e parte local do e-mail</td></tr><tr><td><code>gravatar</code></td><td>email</td><td>passiva</td><td>gravatar.com</td><td>1 requisição com o hash MD5 do e-mail (o dono não é notificado)</td></tr><tr><td><code>pgp</code></td><td>email</td><td>passiva</td><td>keys.openpgp.org</td><td>procura chave pública publicada (só e-mails verificados aparecem)</td></tr><tr><td><code>github</code></td><td>username</td><td>passiva</td><td>api.github.com</td><td>perfil público (60 req/h sem token)</td></tr><tr><td><code>github_commits</code></td><td>username</td><td>passiva</td><td>api.github.com (eventos públicos)</td><td>e-mails de autor em commits públicos recentes</td></tr><tr><td><code>keybase</code></td><td>username</td><td>passiva</td><td>keybase.io</td><td>contas e domínios PROVADOS criptograficamente pelo titular</td></tr><tr><td><code>hackernews</code></td><td>username</td><td>passiva</td><td>hacker-news.firebaseio.com</td><td>perfil público do Hacker News (API oficial)</td></tr><tr><td><code>brasilapi_cnpj</code></td><td>cnpj</td><td>passiva</td><td>brasilapi.com.br</td><td>dados públicos da Receita Federal (QSA, CNAE, endereço)</td></tr><tr><td><code>brasilapi_cep</code></td><td>cep</td><td>passiva</td><td>brasilapi.com.br</td><td>logradouro e coordenadas do CEP (Correios e bases abertas)</td></tr><tr><td><code>cpf_offline</code></td><td>cpf</td><td>offline</td><td>nenhum</td><td>SÓ valida dígitos e região fiscal — CPF nunca é consultado nem pivotado</td></tr><tr><td><code>telefone_offline</code></td><td>telefone</td><td>offline</td><td>nenhum</td><td>país, DDD/UF e tipo de linha por regra de numeração</td></tr><tr><td><code>documento_invalido</code></td><td>documento_invalido</td><td>offline</td><td>nenhum</td><td>formato de CPF/CNPJ com DV errado — nada é consultado</td></tr><tr><td><code>url_host</code></td><td>url</td><td>offline</td><td>nenhum</td><td>extrai o host da URL</td></tr><tr><td><code>wayback_url</code></td><td>url</td><td>passiva</td><td>archive.org (availability API)</td><td>snapshot mais próximo da URL no Internet Archive</td></tr><tr><td><code>circl_hashlookup</code></td><td>hash</td><td>passiva</td><td>hashlookup.circl.lu</td><td>o arquivo é conhecido (NSRL e outras bases de software legítimo)?</td></tr><tr><td><code>nota_pessoa</code></td><td>pessoa,organizacao</td><td>offline</td><td>nenhum</td><td>registra o nome no grafo; pivô por nome exige buscador (fora do modo keyless)</td></tr><tr><td><code>feodo_c2</code></td><td>ip</td><td>passiva</td><td>feodotracker.abuse.ch</td><td>lista pública de C2 de botnets (Dridex, Emotet, QakBot…) — baixa e compara local</td></tr><tr><td><code>sslbl_c2</code></td><td>ip</td><td>passiva</td><td>sslbl.abuse.ch</td><td>lista pública de IPs de C2 por certificado TLS malicioso (SSLBL) — baixa e compara local</td></tr><tr><td><code>openphish</code></td><td>dominio,url</td><td>passiva</td><td>openphish.com</td><td>feed comunitário de URLs de phishing — baixa e compara o host local</td></tr><tr><td><code>digitalside</code></td><td>dominio,ip,hash</td><td>passiva</td><td>osint.digitalside.it</td><td>feeds OSINT de IOCs recentes (domínios, IPs e hashes maliciosos) — baixa e compara local</td></tr><tr><td><code>threatfox</code></td><td>ip,dominio,hash,url</td><td>passiva</td><td>threatfox.abuse.ch</td><td>export CSV público de IOCs recentes com família de malware — baixa e compara local</td></tr>
 </table></div>
 <p style="font-size:.84rem;color:var(--mudo)"><b>passiva</b>: terceiro que já tem os dados · <b>passiva*</b>: DNS via resolvedor público (os nameservers do alvo veem o resolvedor, não você) · <b>offline</b>: nada sai da máquina.</p>
 </div>
 
 <!-- ==================== PROBLEMAS ==================== -->
-<h2 id="problemas">12 · Solução de problemas</h2>
+<h2 id="problemas">15 · Solução de problemas</h2>
 <div class="card">
 <table>
 <tr><th>Sintoma</th><th>Causa provável</th><th>Solução</th></tr>
@@ -604,13 +666,16 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 <tr><td>Telefone virou <code>username</code> ou <code>pessoa</code></td><td>Menos de 10 dígitos (faltou o DDD)</td><td>Digite com DDD: <code>(31) 99999-8888</code> ou <code>+55 31 99999-8888</code></td></tr>
 <tr><td>Painel: "Host não permitido" ou página não abre</td><td>Acessou por outro endereço, ou a porta 8765 está ocupada</td><td>Use exatamente <code>http://127.0.0.1:8765</code>; ou outra porta: <code>python3 garimpo.py painel --porta 8790</code></td></tr>
 <tr><td>Orçamento acaba rápido em domínios</td><td>Cada domínio consultado custa ~14 requisições (RDAP, 8 tipos DNS, CT×2, Wayback×2, urlscan)</td><td>Suba <code>--max-requisicoes</code> ou baixe <code>--max-entidades</code>; olhe a fronteira e investigue só o que importa</td></tr>
+<tr><td>Feed de CTI (abuse.ch) volta 403/vazio</td><td>O abuse.ch pode exigir Auth-Key em alguns feeds agora</td><td>É esperado: a fonte degrada e não acusa nada, fica no ledger. As demais (Digitalside, OpenPhish) seguem keyless</td></tr>
+<tr><td>ESPELHO marca "autenticação EXPOSTO" mas tenho SPF</td><td>A coleta não alcançou o DNS (rede bloqueada) — sem o fato, a classe assume o pior</td><td>Confira o <code>ledger.jsonl</code>; rode de novo com rede. "EXPOSTO" = observável, não vulnerável</td></tr>
+<tr><td>Lote estoura o orçamento</td><td>Muitos alvos × ~4-14 requisições cada</td><td>Suba <code>--max-requisicoes</code> (padrão 200) ou reduza a lista; profundidade 0 já é o mais econômico</td></tr>
 <tr><td>Claude não mostra as ferramentas do GARIMPO</td><td>Caminho errado no JSON do MCP ou o app não foi reiniciado</td><td>Teste o caminho no terminal: <code>python3 /caminho/garimpo.py versao</code>; depois feche e abra o Claude</td></tr>
 <tr><td>macOS: o <code>.command</code> não abre</td><td>Gatekeeper bloqueia scripts baixados</td><td>Botão direito → Abrir → Abrir (uma vez só)</td></tr>
 </table>
 </div>
 
 <!-- ==================== GLOSSÁRIO ==================== -->
-<h2 id="glossario">13 · Glossário</h2>
+<h2 id="glossario">16 · Glossário</h2>
 <div class="card"><dl>
 <dt>OSINT</dt><dd>Inteligência de fontes abertas: informação pública, coletada legalmente.</dd>
 <dt>Passivo</dt><dd>Coleta que não envia requisições à infraestrutura do alvo — só a terceiros que já têm dados sobre ele.</dd>
@@ -637,35 +702,44 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 <dt>QSA</dt><dd>Quadro de Sócios e Administradores de uma empresa, público na Receita Federal.</dd>
 <dt>publicIds (RDAP)</dt><dd>Campo do RDAP onde o registro.br publica o CNPJ do titular de domínios <code>.br</code> de empresas.</dd>
 <dt>Profundidade</dt><dd>Quantos saltos de pivô separam uma entidade do seed: 0 é o seed, 1 é o que foi achado a partir dele.</dd>
+<dt>CTI</dt><dd>Cyber Threat Intelligence — inteligência de ameaças. Aqui, feeds públicos que listam indicadores maliciosos (IPs de C2, URLs de phishing, hashes de malware).</dd>
+<dt>C2 (C&amp;C)</dt><dd>Command and Control — servidor que comanda máquinas infectadas. IP de C2 numa lista é sinal forte de comprometimento.</dd>
+<dt>IOC</dt><dd>Indicator of Compromise — um indicador (IP, domínio, hash, URL) associado a atividade maliciosa.</dd>
+<dt>Feed / blocklist</dt><dd>Lista pública e atualizada de indicadores maliciosos, baixável sem chave.</dd>
+<dt>Reputação</dt><dd>Aqui: se uma entidade consta em feeds de ameaça. Banner vermelho e anel vermelho no grafo.</dd>
+<dt>ESPELHO</dt><dd>Modo de auto-auditoria: o relatório invertido, do que um observador passivo vê de você.</dd>
+<dt>OPSEC</dt><dd>Operational Security — higiene de exposição: o que você deixa (ou não) à mostra.</dd>
+<dt>Lote</dt><dd>Enriquecer vários IOCs de uma vez, num caso só.</dd>
 </dl></div>
 
 <!-- ==================== TÉCNICA ==================== -->
-<h2 id="tecnica">14 · Seção técnica</h2>
+<h2 id="tecnica">17 · Seção técnica</h2>
 <div class="card">
 <h3>Origem: engenharia reversa do OpenOSINT</h3>
-<p>O GARIMPO nasceu da dissecação do <code>OpenOSINT/OpenOSINT</code> (~22 mil linhas, 100 módulos): manteve o passivo-por-padrão, a tabela de ruído e o orçamento rígido; corrigiu 9 lacunas (Brasil ausente, dependência de LLM/chaves, extração por regex frágil, proveniência sem forense, instalação pesada, fontes keyless ignoradas, relatórios sem pt-BR…). O estudo completo, lacuna a lacuna com evidência no código, está em <code>docs/ENGENHARIA-REVERSA-OPENOSINT.md</code>.</p>
+<p>A 2.1 tem <b>33 fontes</b> (28 da 2.0 + 5 de reputação CTI). O GARIMPO nasceu da dissecação do <code>OpenOSINT/OpenOSINT</code> (~22 mil linhas, 100 módulos): manteve o passivo-por-padrão, a tabela de ruído e o orçamento rígido; corrigiu 9 lacunas (Brasil ausente, dependência de LLM/chaves, extração por regex frágil, proveniência sem forense, instalação pesada, fontes keyless ignoradas, relatórios sem pt-BR…). O estudo completo, lacuna a lacuna com evidência no código, está em <code>docs/ENGENHARIA-REVERSA-OPENOSINT.md</code>.</p>
 
-<h3>Resultado dos testes (ambiente de nuvem, 2026-10-17)</h3>
+<h3>Resultado dos testes (ambiente de nuvem, 2026-10-30)</h3>
 <table>
 <tr><th>Bateria</th><th>Resultado</th></tr>
-<tr><td>Suíte automatizada <code>testes/test_garimpo.py</code> (unittest, stdlib, offline)</td><td>✅ <b>48/48</b> em Python <b>3.9, 3.11, 3.12 e 3.13</b> (~3 s)</td></tr>
-<tr><td>— detecção (24 valores, incl. CEP e ASN) e normalização que deduplica grafias</td><td>✅</td></tr>
-<tr><td>— custódia: íntegra, evidência adulterada, ledger forjado, registro removido, caso retomado, <b>40 gravações concorrentes</b></td><td>✅</td></tr>
-<tr><td>— rede: teto duro, cache por URL, rastreio fato→evidência, erro de rede registrado na custódia</td><td>✅</td></tr>
-<tr><td>— 20 testes de fontes contra fixtures no formato documentado (RDAP .br com publicIds, DNS completo, CT×2, urlscan, InternetDB, RIPEstat, Tor, OpenPGP com parser de pacotes, GitHub + commits, Keybase, Hacker News, Gravatar, CNPJ, CEP, hashlookup)</td><td>✅ — inclusive "CPF nunca aparece nem pivota"</td></tr>
-<tr><td>— motor: profundidade, confiança, fronteira, fonte quebrada não derruba, migração de casos 1.x, dossiê à prova de injeção</td><td>✅</td></tr>
-<tr><td>— demo com o motor real + diff; STIX 2.1 (tipos, IDs, referências), GraphML válido, CSV, CPF nunca exportado</td><td>✅</td></tr>
-<tr><td>— MCP de ponta a ponta (subprocesso stdio: initialize, tools/list, chamadas, path traversal, método inexistente, JSON inválido)</td><td>✅ stdout só com JSON-RPC</td></tr>
-<tr><td>— painel de ponta a ponta (HTTP real): API, CSP, exportação zip, evidências, investigação assíncrona; <b>defesas</b>: Host forjado, POST sem cabeçalho, formulário HTML, 4 tentativas de path traversal</td><td>✅ todas bloqueadas</td></tr>
-<tr><td>— CLI com saída forçada em cp1252 (cenário Windows)</td><td>✅</td></tr>
-<tr><td>Fontes ao vivo</td><td>⚠️ bloqueadas pelo firewall da sandbox (403 do proxy); cada falha fica registrada na custódia — <b>validar na máquina local</b></td></tr>
+<tr><td>Suíte automatizada <code>testes/test_garimpo.py</code> (unittest, stdlib, offline)</td><td>✅ <b>68/68</b> em Python <b>3.9, 3.11, 3.12 e 3.13</b> (~4 s)</td></tr>
+<tr><td>Detecção, custódia (incl. 40 gravações concorrentes), rede (cache, rastreio), 20 fontes 2.0 contra fixtures</td><td>✅ (herdado da 2.0)</td></tr>
+<tr><td><b>CTI 2.1</b>: Feodo, SSLBL, OpenPhish, Digitalside por tipo, ThreatFox (CSV real com aspas e espaço) — acerto e erro</td><td>✅ 6 testes</td></tr>
+<tr><td><b>Análise</b>: linha do tempo (ignora CNPJ, pega data com T), reputação, sócios cruzados, exposição</td><td>✅ 5 testes</td></tr>
+<tr><td><b>Lote</b>: leitura TXT/CSV (coluna, dedup), merge de vários seeds num caso, custódia íntegra</td><td>✅ 3 testes</td></tr>
+<tr><td><b>Demo 2.1</b>: reputação (ThreatFox pega o IP), linha do tempo sem falso positivo, ESPELHO e dossiê com as seções novas; diff mostra a reputação surgindo</td><td>✅ 2 testes</td></tr>
+<tr><td><b>MCP 2.1</b>: garimpo_reputacao e garimpo_espelho; garimpo_caso destaca reputação</td><td>✅</td></tr>
+<tr><td><b>Painel 2.1</b>: análise no payload (reputação/linha do tempo/exposição) e rota /espelho</td><td>✅</td></tr>
+<tr><td><b>CLI 2.1</b>: versão 2.1, fontes CTI listadas, <code>lote</code> e <code>espelho</code> offline</td><td>✅</td></tr>
+<tr><td>Fontes ao vivo</td><td>⚠️ bloqueadas pelo firewall da sandbox (403 do proxy); cada falha fica na custódia — <b>validar na máquina local</b></td></tr>
 </table>
 <p>Rode você mesmo: <code>python3 -m unittest discover -s testes -v</code>. Detalhes e pendências: <code>testes/RELATORIO-DE-TESTES.md</code>.</p>
 
 <h3>Decisões de projeto</h3>
 <ul>
 <li><b>Sempre passivo</b> — não existe flag de modo ativo; a classe de ferramenta que "toca o alvo" ficou fora por projeto, não por configuração.</li>
-<li><b>CPF só offline</b> — validação de dígitos verificadores e região fiscal; nenhuma consulta externa, por decisão ética documentada no código.</li>
+<li><b>CPF só offline</b> — validação de dígitos verificadores e região fiscal; nenhuma consulta externa, por decisão ética documentada no código. O CPF de titular de domínio <code>.br</code> é <b>descartado na coleta</b>; CPF <b>nunca é exportado</b> em STIX/GraphML/CSV.</li>
+<li><b>CTI por feed público, degradação graciosa</b> — reputação só por listas keyless; se um feed exigir chave, recebe 403, fica na custódia e não acusa nada.</li>
+<li><b>ESPELHO e sócios cruzados são análise, não coleta nova</b> — derivam do que já está no caso; sócio cruzado é correlação de dado corporativo público, sem busca reversa por pessoa.</li>
 <li><b>Extração estruturada</b> — cada fonte devolve tuplas <code>(tipo, valor, relação, confiança)</code> a partir do JSON da API; o pivô nunca interpreta texto renderizado.</li>
 <li><b>Confiança ≥ 0,6 para pivotar</b> — herdada da calibração do OpenOSINT; abaixo disso a descoberta entra no grafo, mas não vira novo alvo.</li>
 <li><b>Fato → evidência</b> — cada fato guarda os números (<code>#seq</code>) das respostas brutas da chamada que o produziu; o dossiê e o painel linkam o arquivo e mostram o SHA-256.</li>
@@ -675,7 +749,7 @@ python3 garimpo.py investigar d41d8cd98f00b204e9800998ecf8427e   # hash → conh
 </ul>
 </div>
 
-<footer>Manual do GARIMPO 2.0.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
+<footer>Manual do GARIMPO 2.1.0 · família DEIVOSINT · Deivison Lourenço (@Ridd1kulusC0d3r) · MIT · uso legal e autorizado apenas</footer>
 </div>
 </body>
 </html>

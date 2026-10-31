@@ -1,18 +1,18 @@
-# Caso de demonstração — GARIMPO 2.0
+# Caso de demonstração — GARIMPO 2.1
 
 ## O que é
-Duas coletas **fictícias** do mesmo alvo (`exemplo.com.br`), com uma semana de diferença, geradas pelo **motor real**: só a linha que fala com a rede é trocada por respostas sintéticas no formato real de cada API. Detecção, fontes, pivô, custódia, dossiê e diff rodam de verdade.
+Duas coletas **fictícias** do mesmo alvo (`exemplo.com.br`), com uma semana de diferença, geradas pelo **motor real** (só a linha que fala com a rede é trocada por respostas sintéticas no formato real de cada API).
 
 - `demo-anterior/` — 1º de outubro
-- `demo/` — 8 de outubro, com `diff.json` e o quadro **Mudanças** no dossiê
+- `demo/` — 8 de outubro, com `diff.json`, o quadro **Mudanças**, o relatório **ESPELHO** (`espelho.html`) e o banner de **reputação**
 
 IPs e ASN são das faixas reservadas para documentação (RFC 5737 / RFC 5398). Pessoas e empresa são fictícias.
 
-## O que observar
-1. **Pivô brasileiro:** o RDAP do registro.br traz o CNPJ do titular → BrasilAPI → sócios, e-mail, telefone e CEP → coordenadas.
-2. **Mudanças:** subdomínio `staging` novo (CT), porta 8443 nova (InternetDB), sócio novo no QSA.
-3. **Evidência por fato:** cada linha do dossiê tem `#n`, que abre a resposta bruta.
-4. **Fronteira:** nameservers e o username `contato` aparecem pontilhados — achados, não consultados.
+## O que observar (novidades 2.1)
+1. **Reputação:** na semana 2, o IP `203.0.113.10` aparece no **ThreatFox** como C2 (como se o servidor tivesse sido comprometido) — banner vermelho no topo do dossiê, anel vermelho no grafo do painel, e a mudança aparece no diff.
+2. **Linha do tempo:** fatos datados em ordem — abertura do CNPJ (2018), registro do domínio (2019), snapshots, o alerta de C2 (2026).
+3. **ESPELHO:** abra `demo/espelho.html` — placar de exposição e classes defensivas.
+4. **Pivô brasileiro:** RDAP do registro.br → CNPJ do titular → sócios, e-mail, CEP → coordenadas.
 
 ## Rode
 ```bash

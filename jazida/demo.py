@@ -78,6 +78,18 @@ def _universo(semana: int) -> dict:
         "as-overview": {"data": {"holder": "EXEMPLO-AS — documentação RFC 5398", "announced": True}},
         "announced-prefixes": {"data": {"prefixes": [{"prefix": "203.0.113.0/24"}, {"prefix": "2001:db8::/32"}]}},
         "torbulkexitlist": "198.51.100.7\n198.51.100.8\n",
+        # --- CTI keyless: nada na semana 1; na semana 2 o IP aparece no ThreatFox
+        # (como se o servidor tivesse sido comprometido e virado C2) ---
+        "feodotracker.abuse.ch": [],
+        "sslbl.abuse.ch": "Firstseen,DstIP,DstPort\n",
+        "openphish.com": "http://site-de-phishing-exemplo.tld/login\n",
+        "latestdomains.txt": "# Digitalside domains\nmalware-exemplo.tld\n",
+        "latestips.txt": "# Digitalside ips\n198.51.100.200\n",
+        "latesthashes.txt": "# Digitalside hashes\n" + "0" * 64 + "\n",
+        "threatfox.abuse.ch": (
+            "first_seen_utc,ioc_id,ioc_value,ioc_type,threat_type,fk_malware,malware_alias,malware_printable,confidence_level\n"
+            + ("2026-10-05 10:00:00,99999,203.0.113.10:8443,ip:port,botnet_cc,win.exampletrojan,,ExampleTrojan,75\n"
+               if nova else "")),
     }
 
 
@@ -120,7 +132,7 @@ def rodar_demo(base: str = "casos") -> str:
         class C(ClienteOffline):
             pass
         C.semana = semana
-        caso = investigar(SEED, Orcamento(max_requisicoes=140, max_entidades=15, profundidade=2), d,
+        caso = investigar(SEED, Orcamento(max_requisicoes=220, max_entidades=15, profundidade=2), d,
                           silencioso=True, paralelo=1, cliente_cls=lambda *a, **k: C(*a, cortesia=0, **k))
         caso["iniciado_utc"] = f"2026-10-{1 + (semana - 1) * 7:02d}T09:00:00+00:00"
         caso["ferramenta"] += " · DEMO offline (dados fictícios)"

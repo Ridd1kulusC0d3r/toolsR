@@ -62,6 +62,12 @@ FERRAMENTAS = [
      "inputSchema": {"type": "object", "properties": {"caso": {"type": "string"},
                                                       "formato": {"type": "string", "enum": list(FORMATOS)}},
                      "required": ["caso", "formato"]}},
+    {"name": "garimpo_reputacao", "description": "Sinais de reputação (CTI) de um caso: entidades que constam em feeds "
+                                                 "públicos de ameaça (C2, phishing, malware). Fortes indícios a confirmar.",
+     "inputSchema": {"type": "object", "properties": {"caso": {"type": "string"}}, "required": ["caso"]}},
+    {"name": "garimpo_espelho", "description": "Auto-auditoria OPSEC (ESPELHO) de um caso: classes de exposição passiva "
+                                               "e recomendações defensivas. Gera também espelho.html na pasta do caso.",
+     "inputSchema": {"type": "object", "properties": {"caso": {"type": "string"}}, "required": ["caso"]}},
 ]
 
 
@@ -83,9 +89,15 @@ class Servidor:
         return d
 
     def _resumo(self, caso: dict, limite: int = 60) -> str:
+        from .analise import reputacao
         g = caso["grafo"]
         linhas = [f"Seed: {caso['seed']} ({caso['tipo_seed']}) · requisições {caso['orcamento']['requisicoes_feitas']}"
                   f"/{caso['orcamento']['max_requisicoes']}"]
+        rep = reputacao(caso)
+        if rep["total"]:
+            linhas.append(f"\n⚠ REPUTAÇÃO: {rep['total']} sinal(is) em lista de ameaça — "
+                          + "; ".join(f"{v['valor']} [{s['fonte']}] {s['fato']}"
+                                      for v in rep["nos"].values() for s in v["sinais"])[:600])
         n = 0
         for k, no in g["nos"].items():
             if not no["investigado"]:
@@ -126,6 +138,30 @@ class Servidor:
             if fmt not in FORMATOS:
                 raise ErroFerramenta(f"formato inválido: {fmt}")
             return "\n".join(exportar(carregar_caso(d), d, fmt))
+        if nome == "garimpo_reputacao":
+            from .analise import reputacao
+            rep = reputacao(carregar_caso(self._caso_dir(args.get("caso"))))
+            if not rep["total"]:
+                return "Nenhum sinal de reputação em listas de ameaça neste caso."
+            return f"{rep['total']} sinal(is):\n" + "\n".join(
+                f"- {v['valor']} ({v['tipo']}) [{s['fonte']}] {s['fato']}"
+                for v in rep["nos"].values() for s in v["sinais"])
+        if nome == "garimpo_espelho":
+            d = self._caso_dir(args.get("caso"))
+            from .analise import exposicao
+            from .espelho import gerar_relatorio
+            caso = carregar_caso(d)
+            exp = exposicao(caso)
+            gerar_relatorio(caso, d)
+            linhas = [f"ESPELHO (auto-auditoria OPSEC) de {caso['seed']}",
+                      f"Exposição passiva: {exp['pontuacao']}/100 — {exp['resumo']}",
+                      f"Relatório: {os.path.join(d, 'espelho.html')}", ""]
+            for c in exp["classes"]:
+                linhas.append(f"[{'EXPOSTO' if c['exposto'] else 'ok'}] {c['titulo']}")
+                for a in c["achados"][:4]:
+                    linhas.append(f"    · {a}")
+                linhas.append(f"    → {c['recomendacao']}")
+            return "\n".join(linhas)
         if nome == "garimpo_investigar":
             alvo = str(args.get("alvo", "")).strip()
             if not alvo:

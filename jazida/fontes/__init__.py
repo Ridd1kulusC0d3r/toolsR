@@ -66,4 +66,4 @@ def tabela_ruido() -> list[tuple[str, str, str, str]]:
     return [(f.nome, ",".join(f.tipos), f.nivel, f"{f.destino} — {f.descricao}") for f in REGISTRO]
 
 
-from . import dominio, ip, pessoais, brasil, artefatos  # noqa: E402,F401  (registra as fontes)
+from . import dominio, ip, pessoais, brasil, artefatos, ameacas  # noqa: E402,F401  (registra as fontes)

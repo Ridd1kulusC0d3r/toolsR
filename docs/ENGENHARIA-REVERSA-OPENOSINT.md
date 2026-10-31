@@ -108,3 +108,22 @@ A 1.x corrigiu as lacunas do núcleo do OpenOSINT, mas ficou atrás dele em trê
 | Fontes keyless novas | — | RIPEstat, Certspotter, urlscan (leitura), Tor, CIRCL hashlookup, Keybase, Hacker News, keys.openpgp.org (parser OpenPGP próprio), e-mails de commits |
 
 Ainda deliberadamente fora: loop agêntico com LLM embutido (no GARIMPO 2.0 o raciocínio fica com o cliente MCP, e a ferramenta continua determinística), deduplicação probabilística FtM/nomenklatura e qualquer modo ativo.
+
+---
+
+## 8. GARIMPO 2.1 — além do OpenOSINT (2026-10-30)
+
+A 2.0 alcançou o OpenOSINT (MCP, web, paralelismo). A 2.1 avança para onde o OpenOSINT original não ia, sempre em stdlib pura:
+
+| Frente | OpenOSINT | GARIMPO 2.1 |
+|---|---|---|
+| Reputação de ameaças (CTI) | VirusTotal/Shodan/AbuseIPDB **com chave** | **5 feeds keyless** (Feodo, SSLBL, OpenPhish, Digitalside, ThreatFox), baixados e comparados local; banner + anel vermelho |
+| Enriquecimento em lote | — | comando `lote`: N IOCs num caso, custódia e grafo compartilhados, STIX consolidado |
+| Auto-auditoria defensiva | — | modo `espelho`: relatório de exposição OPSEC em classes, com recomendações |
+| Linha do tempo | — | fatos datados em ordem cronológica (com guarda contra falso positivo de CNPJ) |
+| Correlação corporativa | dedup FtM (com dependência) | `socios_cruzados`: sócio em >1 CNPJ do caso, por correlação do que já foi coletado — sem busca reversa por pessoa |
+| Camada de análise | espalhada | `jazida/analise.py` central: reputação, timeline, QSA, exposição — consumida por dossiê, painel, ESPELHO e MCP |
+
+Guardas mantidas e reforçadas: sempre passivo; CPF nunca consultado, pivotado nem **exportado** (STIX/GraphML/CSV), e o CPF de titular de domínio `.br` é descartado na coleta; CTI só por feed público, com degradação graciosa quando um feed vira pago; ESPELHO e sócios cruzados são análise do caso, não coleta nova.
+
+Continua fora de escopo, por decisão: LLM embutido (o raciocínio fica no cliente MCP), dedup probabilístico FtM/nomenklatura, e qualquer modo ativo.
